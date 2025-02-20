@@ -3,7 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npx playwright test",
+    "test:chromium": "npx playwright test --project=chromium",
+    "test:firefox": "npx playwright test --project=firefox", 
+    "test:webkit": "npx playwright test --project=webkit",
+    "test:report": "npx playwright test && npx playwright show-report",
+    "test:ui": "npx playwright test --ui",
+    "test:login": "npx playwright test --grep @login",
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/songc120/PlaywrightPractice.git"
