@@ -21,7 +21,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Debug Secrets
-        run: echo "ADMIN_EMAIL=${ADMIN_EMAIL}"
+        env:
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          USER1_EMAIL: ${{ secrets.USER1_EMAIL }}
+          USER1_PASSWORD: ${{ secrets.USER1_PASSWORD }}
+          USER2_EMAIL: ${{ secrets.USER2_EMAIL }}
+          USER2_PASSWORD: ${{ secrets.USER2_PASSWORD }}
+        run: |
+          echo "ADMIN_EMAIL=${ADMIN_EMAIL}"
+          echo "USER1_EMAIL=${USER1_EMAIL}"
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
