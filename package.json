@@ -10,7 +10,7 @@
     "test:webkit": "npx playwright test --project=webkit",
     "test:report": "npx playwright test && npx playwright show-report",
     "test:ui": "npx playwright test --ui",
-    "test:login": "npx playwright test --grep @login",
+    "test:login": "npx playwright test --grep @login"
   },
   "repository": {
     "type": "git",
