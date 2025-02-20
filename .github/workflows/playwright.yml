@@ -19,6 +19,13 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      USER1_EMAIL: ${{ secrets.USER1_EMAIL }}
+      USER1_PASSWORD: ${{ secrets.USER1_PASSWORD }}
+      USER2_EMAIL: ${{ secrets.USER2_EMAIL }}
+      USER2_PASSWORD: ${{ secrets.USER2_PASSWORD }}
     steps:
       - name: Debug Secrets
         env:
