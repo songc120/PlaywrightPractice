@@ -1,10 +1,13 @@
 import { Page } from "@playwright/test";
+import { NavBar } from "./NavBar";
 
 export class LoginPage {
   private page: Page;
+  private navBar: NavBar;
 
   constructor(page: Page) {
     this.page = page;
+    this.navBar = new NavBar(page);
   }
 
   // Locators
@@ -19,6 +22,9 @@ export class LoginPage {
   // Methods
   async navigate() {
     await this.page.goto("/auth/login");
+  }
+  async goToLoginFromNav() {
+    await this.navBar.clickSignIn();
   }
 
   async login(username: string, password: string) {

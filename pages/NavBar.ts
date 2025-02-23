@@ -13,7 +13,7 @@ export class NavBar {
   private categories = () => this.page.locator('[data-test="nav-categories"]');
   private contact = () => this.page.locator('[data-test="nav-contact"]');
   private signInButton = () => this.page.locator('[data-test="nav-sign-in"]');
-  private navMenu = () => this.page.locator('[data-test="nav-menu"]');
+  private userMenu = () => this.page.locator('[data-test="nav-menu"]');
   private languageSelect = () =>
     this.page.locator('[data-test="language-select"]');
 
@@ -27,7 +27,7 @@ export class NavBar {
     this.page.locator('[data-test="nav-special-tools"]');
   private rentalsButton = () => this.page.locator('[data-test="nav-rentals"]');
 
-  //Options under navMenu
+  //Options under userMenu
   private myAccountButton = () =>
     this.page.locator('[data-test="nav-my-account"]');
   private myFavoritesButton = () =>
@@ -69,7 +69,7 @@ export class NavBar {
   }
 
   async openNavMenu() {
-    await this.navMenu().click();
+    await this.userMenu().click();
   }
 
   async selectLanguage(language: string) {
@@ -85,7 +85,7 @@ export class NavBar {
   }
 
   async getUserMenuText() {
-    return await this.navMenu().textContent();
+    return await this.userMenu().textContent();
   }
 
   async logout() {
