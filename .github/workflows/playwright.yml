@@ -11,6 +11,10 @@ env:
   USER1_PASSWORD: ${{ secrets.USER1_PASSWORD }}
   USER2_EMAIL: ${{ secrets.USER2_EMAIL }}
   USER2_PASSWORD: ${{ secrets.USER2_PASSWORD }}
+  NOT_USER_EMAIL: ${{ secrets.NOT_USER_EMAIL }}
+  NOT_USER_PASSWORD: ${{ secrets.NOT_USER_PASSWORD }}
+  INVALID_EMAIL: ${{ secrets.INVALID_EMAIL }}
+  INVALID_PASSWORD: ${{ secrets.INVALID_PASSWORD }}
 jobs:
   test:
     timeout-minutes: 60

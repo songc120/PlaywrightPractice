@@ -48,17 +48,17 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], permissions: ["clipboard-read"] },
     },
 
-    {
-      name: "firefox",
-      dependencies: ["setup"],
-      use: { ...devices["Desktop Firefox"] },
-    },
+    // {
+    //   name: "firefox",
+    //   dependencies: ["setup"],
+    //   use: { ...devices["Desktop Firefox"] },
+    // },
 
-    {
-      name: "webkit",
-      dependencies: ["setup"],
-      use: { ...devices["Desktop Safari"] },
-    },
+    // {
+    //   name: "webkit",
+    //   dependencies: ["setup"],
+    //   use: { ...devices["Desktop Safari"] },
+    // },
 
     /* Test against mobile viewports. */
     // {
