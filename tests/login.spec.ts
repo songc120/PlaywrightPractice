@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "../pages/LoginPage";
-import { NavBar } from "../pages/NavBar";
+import { LoginPage } from "../pages/login-page";
+import { NavBar } from "../components/nav-bar";
 import {
   USER1_EMAIL,
   USER1_PASSWORD,
