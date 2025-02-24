@@ -9,3 +9,9 @@ export const USER1_PASSWORD = process.env.USER1_PASSWORD || "";
 
 export const USER2_EMAIL = process.env.USER2_EMAIL || "";
 export const USER2_PASSWORD = process.env.USER2_EMAIL || "";
+
+export const NOT_USER_EMAIL = process.env.NOT_USER_EMAIL || "";
+export const NOT_USER_PASSWORD = process.env.NOT_USER_PASSWORD || "";
+
+export const INVALID_EMAIL = "invalid-email-format";
+export const INVALID_PASSWORD = "sh";
