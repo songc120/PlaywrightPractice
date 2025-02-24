@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { NavBar } from "./NavBar";
+import { NavBar } from "../components/NavBar";
 
 export class LoginPage {
   private page: Page;
