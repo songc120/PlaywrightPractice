@@ -1,8 +1,8 @@
 import { Page } from "@playwright/test";
-import { NavBar } from "../components/NavBar";
-import { Banner } from "../components/Banner";
-import { Filters } from "../components/Filters";
-import { ProductContainer } from "../components/ProductContainer";
+import { NavBar } from "../components/nav-bar";
+import { Banner } from "../components/banner";
+import { Filters } from "../components/filters";
+import { ProductContainer } from "../components/product-container";
 
 export class HomePage {
   private page: Page;
