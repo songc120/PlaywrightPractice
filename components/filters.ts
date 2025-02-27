@@ -11,9 +11,13 @@ export class Filters {
   private categoryFilter: CategoryFilter;
   private readonly selectors = {
     searchInput: '[data-test="search-query"]',
-    sortDropdown: '[data-test="sort-select"]',
-    priceMin: '[data-test="price-min"]',
-    priceMax: '[data-test="price-max"]',
+    searchSubmit: '[data-test="search-submit"]',
+    searchReset: '[data-test="search-reset"]',
+    sortDropdown: '[data-test="sort"]',
+    priceSliderMin: ".ngx-slider-pointer-min",
+    priceSliderMax: ".ngx-slider-pointer-max",
+    sliderFullTrack: ".ngx-slider-full-bar",
+    sliderTrack: ".ngx-slider-selection",
     categoryCheckbox: (name: string) => `[data-test="category-${name}"]`,
   };
 
@@ -38,8 +42,13 @@ export class Filters {
    * @param query - Search term
    */
   async searchProduct(query: string): Promise<void> {
-    await this.page.fill(this.selectors.searchInput, query);
-    await this.page.keyboard.press("Enter");
+    const input = this.searchInput();
+    await input.waitFor({ state: "visible", timeout: 5000 });
+    await input.fill(query);
+
+    const submit = this.searchSubmit();
+    await submit.waitFor({ state: "visible", timeout: 5000 });
+    await submit.click();
   }
 
   /**
@@ -180,13 +189,22 @@ export class Filters {
     return parseFloat(maxValue || "0");
   }
 
-  // async searchProduct(query: string) {
-  //   await this.searchInput().fill(query);
-  //   await this.searchSubmit().click();
-  // }
+  /**
+   * Resets the search
+   */
+  async resetSearch(): Promise<void> {
+    const reset = this.searchReset();
+    await reset.waitFor({ state: "visible", timeout: 5000 });
+    await reset.click();
+  }
 
-  async resetSearch() {
-    await this.searchReset().click();
+  /**
+   * Gets the current search query
+   */
+  async getSearchQuery(): Promise<string> {
+    const searchInput = this.searchInput();
+    await searchInput.waitFor({ state: "visible", timeout: 5000 });
+    return await searchInput.inputValue();
   }
 
   async filterByCategory(categories: string[]): Promise<void> {

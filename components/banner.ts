@@ -1,7 +1,7 @@
 import { Page } from "@playwright/test";
 
 /**
- * Represents the banner component of the website.
+ * Represents the banner component.
  * Handles operations related to the main banner image.
  */
 export class Banner {
@@ -17,7 +17,6 @@ export class Banner {
 
   /**
    * Locator for the banner image
-   * @returns Locator for the banner element
    */
   private banner = () => this.page.locator('img[alt="Banner"]');
 
@@ -25,7 +24,29 @@ export class Banner {
    * Checks if the banner is visible on the page
    * @returns Promise<boolean> True if banner is visible
    */
-  async isVisible() {
-    return await this.banner().isVisible();
+  async isVisible(): Promise<boolean> {
+    const element = this.banner();
+    await element.waitFor({ state: "visible", timeout: 5000 });
+    return await element.isVisible();
+  }
+
+  /**
+   * Gets the banner image source URL
+   * @returns Promise<string> The image URL
+   */
+  async getImageUrl(): Promise<string> {
+    const element = this.banner();
+    await element.waitFor({ state: "visible", timeout: 5000 });
+    return (await element.getAttribute("src")) || "";
+  }
+
+  /**
+   * Clicks the banner if it's clickable
+   */
+  async click(): Promise<void> {
+    const bannerLink = this.page.locator('a:has(img[alt="Banner"])');
+    if (await bannerLink.isVisible()) {
+      await bannerLink.click();
+    }
   }
 }

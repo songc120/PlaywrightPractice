@@ -30,13 +30,16 @@ export class CategoryFilter {
   /**
    * Filters products by selecting multiple categories
    * @param categories - Array of category names to filter by
-   * @returns Promise<void>
    */
   async filterByCategory(categories: string[]): Promise<void> {
     for (const category of categories) {
       const checkbox = this.categoryCheckbox(category);
+      await checkbox.waitFor({ state: "visible", timeout: 5000 });
+
       if (!(await checkbox.isChecked())) {
         await checkbox.check();
+        // Wait for filtering to complete
+        await this.page.waitForLoadState("networkidle");
       }
     }
   }

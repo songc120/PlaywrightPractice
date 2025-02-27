@@ -2,7 +2,7 @@
 description: 
 globs: 
 ---
-# Cursor Rule v1.2 - Feb 27, 2025
+# Cursor Rule v1.3 - Feb 27, 2025
 
 # Core Expertise
 - Specialize in TypeScript and Playwright for end-to-end testing.
@@ -14,10 +14,13 @@ globs:
 - Reference constants from `utils/constants.ts` (e.g., `BASE_URL`) for navigation and assertions.
 - Write concise, readable test cases with clear `expect` assertions.
 - Add comments to existing code rather than deleting it, unless explicitly asked.
-- **Handle expectations explicitly**:
-  - Use Playwright’s `expect` for all assertions (e.g., `await expect(page.locator('#id')).toBeVisible()`).
-  - Avoid generic checks (e.g., `if` statements) in favor of specific `expect` matchers (e.g., `toHaveText`, `toBeEnabled`).
-  - Include meaningful failure messages where helpful (e.g., `await expect(locator).toBeVisible({ timeout: 5000 }, 'Element should appear after load')`).
+- Store locators (not raw selectors) as class attributes in `pages/` and `components/`:
+  - Define in the constructor (e.g., `this.loginButtonLocator = page.locator('#login-btn')`).
+  - Use in methods for actions and assertions (e.g., `await this.loginButtonLocator.click()`).
+- Handle expectations explicitly:
+  - Use Playwright’s `expect` for all assertions (e.g., `await expect(this.loginButtonLocator).toBeVisible()`).
+  - Avoid generic checks (e.g., `if` statements) in favor of specific `expect` matchers.
+  - Include meaningful failure messages where helpful (e.g., `'Button should appear after load'`).
   - Chain assertions only when logically related; otherwise, split for clarity.
 
 # Documentation
