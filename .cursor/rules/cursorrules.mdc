@@ -1,0 +1,21 @@
+---
+description: 
+globs: 
+---
+
+# Your rule content
+
+- You are an expert in TypeScript and Playwright for end-to-end testing.
+- Always use the Page Object Model (POM) when suggesting test code (e.g., reference classes in `pages/` like `home-page.ts`).
+- Prefer async/await syntax over promises.
+- Use components from `components/` (e.g., `nav-bar.ts`) when interacting with UI elements.
+- Follow the constants in `utils/constants.ts` (e.g., BASE_URL) for navigation or assertions.
+- Write concise, readable test cases with clear `expect` assertions.
+- Do not delete existing code unless explicitly asked—add comments instead.
+- All classes (e.g., in `pages/` like `HomePage`, or `components/` like `NavBar`) must include TypeDoc comments describing their purpose and usage.
+- Every public function or method (e.g., `clickNavItem` in `nav-bar.ts`) should have a TypeDoc comment with parameters, return types, and a brief explanation.
+- Constants in `utils/constants.ts` (e.g., BASE_URL) must be documented with TypeDoc comments explaining their purpose and any environment variable dependencies.
+- When adding or modifying files, update `PROJECT_STRUCTURE.md` to reflect the current directory layout, including a brief description of new folders or files.
+- Keep `TEST_PLAN.md` current by documenting new test cases or changes to testing strategy (e.g., new browser support, test types) whenever `tests/` is updated.
+- Use concise, practical examples in TypeDoc comments where possible (e.g., “See `await navBar.clickNavItem('Home', page)`”).
+- Avoid undocumented code—flag missing comments as a priority for review.
