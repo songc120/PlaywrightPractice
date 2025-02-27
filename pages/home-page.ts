@@ -4,6 +4,10 @@ import { Banner } from "../components/banner";
 import { Filters } from "../components/filters";
 import { ProductContainer } from "../components/product-container";
 
+/**
+ * Represents the Home Page of the practice software testing website.
+ * Handles all interactions and operations available on the main page.
+ */
 export class HomePage {
   private page: Page;
   public navBar: NavBar;
@@ -11,6 +15,10 @@ export class HomePage {
   public filters: Filters;
   public products: ProductContainer;
 
+  /**
+   * Creates an instance of HomePage.
+   * @param page - The Playwright Page object
+   */
   constructor(page: Page) {
     this.page = page;
     this.navBar = new NavBar(page);
@@ -19,10 +27,20 @@ export class HomePage {
     this.products = new ProductContainer(page);
   }
 
+  /**
+   * Navigates to the home page of the application.
+   * @returns Promise<void>
+   */
   async visit(): Promise<void> {
     await this.page.goto("https://practicesoftwaretesting.com/");
   }
 
+  /**
+   * Performs product search and applies sorting.
+   * @param query - The search term to look for
+   * @param sortOption - The sorting option to apply
+   * @returns Promise<void>
+   */
   async searchAndSort(
     query: string,
     sortOption: "name,asc" | "name,desc" | "price,asc" | "price,desc"
@@ -31,10 +49,21 @@ export class HomePage {
     await this.filters.selectSortOption(sortOption);
   }
 
+  /**
+   * Filters products by price range.
+   * @param min - Minimum price value
+   * @param max - Maximum price value
+   * @returns Promise<void>
+   */
   async filterByPriceRange(min: number, max: number): Promise<void> {
     await this.filters.setPriceRange(min, max);
   }
 
+  /**
+   * Navigates to a specific product category.
+   * @param category - The category to navigate to
+   * @returns Promise<void>
+   */
   async goToCategory(
     category:
       | "hand-tools"
@@ -63,6 +92,11 @@ export class HomePage {
     }
   }
 
+  /**
+   * Changes the website language.
+   * @param language - The language code to switch to
+   * @returns Promise<void>
+   */
   async changeLanguage(
     language: "de" | "en" | "es" | "fr" | "nl" | "tr"
   ): Promise<void> {
