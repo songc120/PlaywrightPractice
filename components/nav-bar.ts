@@ -65,51 +65,61 @@ export class NavBar {
   private trButton = () => this.page.locator('[data-test="lang-tr"]');
 
   /**
+   * Helper method to wait for and click an element
+   * @param locator - Function that returns a locator
+   */
+  private async waitAndClick(locator: () => any): Promise<void> {
+    const element = locator();
+    await element.waitFor({ state: "visible", timeout: 5000 });
+    await element.click();
+  }
+
+  /**
    * Clicks the brand logo/link
    * @returns Promise<void>
    */
-  async clickBrand() {
-    await this.brand().click();
+  async clickBrand(): Promise<void> {
+    await this.waitAndClick(this.brand);
   }
 
   /**
    * Navigates to home page
    * @returns Promise<void>
    */
-  async clickHome() {
-    await this.home().click();
+  async clickHome(): Promise<void> {
+    await this.waitAndClick(this.home);
   }
 
   /**
    * Opens categories dropdown menu
    * @returns Promise<void>
    */
-  async clickCategories() {
-    await this.categories().click();
+  async clickCategories(): Promise<void> {
+    await this.waitAndClick(this.categories);
   }
 
   /**
    * Navigates to contact page
    * @returns Promise<void>
    */
-  async clickContact() {
-    await this.contact().click();
+  async clickContact(): Promise<void> {
+    await this.waitAndClick(this.contact);
   }
 
   /**
    * Clicks sign in button
    * @returns Promise<void>
    */
-  async clickSignIn() {
-    await this.signInButton().click();
+  async clickSignIn(): Promise<void> {
+    await this.waitAndClick(this.signInButton);
   }
 
   /**
    * Opens user navigation menu
    * @returns Promise<void>
    */
-  async openNavMenu() {
-    await this.userMenu().click();
+  async openNavMenu(): Promise<void> {
+    await this.waitAndClick(this.userMenu);
   }
 
   /**
@@ -118,30 +128,26 @@ export class NavBar {
    * @returns Promise<void>
    * @throws Error if language is not supported
    */
-  async selectLanguage(language: "de" | "en" | "es" | "fr" | "nl" | "tr") {
-    await this.languageSelect().click();
-    switch (language) {
-      case "de":
-        await this.deButton().click();
-        break;
-      case "en":
-        await this.enButton().click();
-        break;
-      case "es":
-        await this.esButton().click();
-        break;
-      case "fr":
-        await this.frButton().click();
-        break;
-      case "nl":
-        await this.nlButton().click();
-        break;
-      case "tr":
-        await this.trButton().click();
-        break;
-      default:
-        throw new Error(`Unsupported language: ${language}`);
+  async selectLanguage(
+    language: "de" | "en" | "es" | "fr" | "nl" | "tr"
+  ): Promise<void> {
+    await this.waitAndClick(this.languageSelect);
+
+    const languageButtons = {
+      de: this.deButton,
+      en: this.enButton,
+      es: this.esButton,
+      fr: this.frButton,
+      nl: this.nlButton,
+      tr: this.trButton,
+    };
+
+    const buttonLocator = languageButtons[language];
+    if (!buttonLocator) {
+      throw new Error(`Unsupported language: ${language}`);
     }
+
+    await this.waitAndClick(buttonLocator);
   }
 
   /**
@@ -150,7 +156,9 @@ export class NavBar {
    * @throws Error if language select has no text
    */
   async getSelectedLanguage(): Promise<string> {
-    const text = await this.languageSelect().textContent();
+    const element = this.languageSelect();
+    await element.waitFor({ state: "visible", timeout: 5000 });
+    const text = await element.textContent();
     if (!text) throw new Error("Language select button has no text");
     return text.replace(/[^a-zA-Z]/g, "").toLowerCase();
   }
@@ -159,26 +167,28 @@ export class NavBar {
    * Checks if brand element is visible
    * @returns Promise<boolean>
    */
-  async getBrandVisibility() {
-    const brandLocator = this.brand();
-    await brandLocator.waitFor({ state: "visible", timeout: 5000 });
-    return await this.brand().isVisible();
+  async getBrandVisibility(): Promise<boolean> {
+    const element = this.brand();
+    await element.waitFor({ state: "visible", timeout: 5000 });
+    return await element.isVisible();
   }
 
   /**
    * Gets user menu text content
    * @returns Promise<string | null>
    */
-  async getUserMenuText() {
-    return await this.userMenu().textContent();
+  async getUserMenuText(): Promise<string | null> {
+    const element = this.userMenu();
+    await element.waitFor({ state: "visible", timeout: 5000 });
+    return await element.textContent();
   }
 
   /**
    * Performs logout operation
    * @returns Promise<void>
    */
-  async logout() {
-    this.openNavMenu();
-    await this.logoutButton().click();
+  async logout(): Promise<void> {
+    await this.openNavMenu();
+    await this.waitAndClick(this.logoutButton);
   }
 }

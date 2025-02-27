@@ -51,16 +51,15 @@ export class ProductContainer {
   }
 
   /**
-   * Gets all products currently displayed
-   * @returns Promise<ProductInfo[]> Array of product information
+   * Gets product information by data-test attribute
+   * @param productId - The product ID from data-test attribute
+   * @returns Promise<ProductInfo>
    */
-  async getAllProducts(): Promise<ProductInfo[]> {
-    const products: ProductInfo[] = [];
-    const count = await this.getProductCount();
-
-    for (let i = 0; i < count; i++) {
-      const product = this.productsLocator.nth(i);
-      products.push({
+  private async getProductByDataTest(productId: string): Promise<ProductInfo> {
+    const product = this.page.locator(`[data-test="product-${productId}"]`);
+    try {
+      await product.waitFor({ state: "visible", timeout: 5000 });
+      return {
         name:
           (await product.locator(this.selectors.productName).textContent()) ||
           "",
@@ -70,8 +69,33 @@ export class ProductContainer {
         isOutOfStock: await product
           .locator(this.selectors.outOfStock)
           .isVisible(),
-        id: (await product.getAttribute("data-test")) || "",
-      });
+        id: productId,
+      };
+    } catch (error) {
+      throw new Error(`Failed to find product with ID ${productId}`);
+    }
+  }
+
+  /**
+   * Gets all products currently displayed
+   * @returns Promise<ProductInfo[]>
+   */
+  async getAllProducts(): Promise<ProductInfo[]> {
+    await this.page.waitForSelector(this.selectors.productCard, {
+      state: "visible",
+    });
+    const productElements = await this.page
+      .locator(this.selectors.productCard)
+      .all();
+
+    const products: ProductInfo[] = [];
+    for (const element of productElements) {
+      const id = (await element.getAttribute("data-test")) || "";
+      if (id) {
+        products.push(
+          await this.getProductByDataTest(id.replace("product-", ""))
+        );
+      }
     }
     return products;
   }
@@ -88,58 +112,21 @@ export class ProductContainer {
   }
 
   /**
-   * Gets product information by index
-   * @param index - The index of the product
-   * @returns Promise<ProductInfo> Product information
-   * @throws Error if product not found
-   */
-  async getProductByIndex(index: number): Promise<ProductInfo> {
-    const product = this.getProductLocator(index);
-    try {
-      await product.waitFor({ state: "visible", timeout: 5000 }); // 5 second timeout
-      return {
-        name:
-          (await product.locator(this.selectors.productName).textContent()) ||
-          "",
-        price:
-          (await product.locator(this.selectors.productPrice).textContent()) ||
-          "",
-        isOutOfStock: await product
-          .locator(this.selectors.outOfStock)
-          .isVisible(),
-        id: (await product.getAttribute("data-test")) || "",
-      };
-    } catch (error) {
-      throw new Error(
-        `Failed to find product at index ${index}. Either the product doesn't exist or is not visible.`
-      );
-    }
-  }
-
-  /**
    * Gets product information by name
    * @param name - The name of the product
-   * @returns Promise<ProductInfo> Product information
-   * @throws Error if product not found
+   * @returns Promise<ProductInfo>
    */
   async getProductByName(name: string): Promise<ProductInfo> {
-    const product = this.getProductLocator(name);
+    const product = this.page.locator(this.selectors.productCard).filter({
+      has: this.page.locator(this.selectors.productName, { hasText: name }),
+    });
+
     try {
-      await product.waitFor({ state: "visible", timeout: 5000 }); // 5 second timeout
-      return {
-        name,
-        price:
-          (await product.locator(this.selectors.productPrice).textContent()) ||
-          "",
-        isOutOfStock: await product
-          .locator(this.selectors.outOfStock)
-          .isVisible(),
-        id: (await product.getAttribute("data-test")) || "",
-      };
+      await product.waitFor({ state: "visible", timeout: 5000 });
+      const id = (await product.getAttribute("data-test")) || "";
+      return await this.getProductByDataTest(id.replace("product-", ""));
     } catch (error) {
-      throw new Error(
-        `Failed to find product "${name}". Either the product doesn't exist or is not visible.`
-      );
+      throw new Error(`Failed to find product "${name}"`);
     }
   }
 
@@ -239,5 +226,28 @@ export class ProductContainer {
         .locator(this.selectors.productImage)
         .getAttribute("src")) || ""
     );
+  }
+
+  async getProductByIndex(index: number): Promise<ProductInfo> {
+    const product = this.getProductLocator(index);
+    try {
+      await product.waitFor({ state: "visible", timeout: 5000 });
+      return {
+        name:
+          (await product.locator(this.selectors.productName).textContent()) ||
+          "",
+        price:
+          (await product.locator(this.selectors.productPrice).textContent()) ||
+          "",
+        isOutOfStock: await product
+          .locator(this.selectors.outOfStock)
+          .isVisible(),
+        id: (await product.getAttribute("data-test")) || "",
+      };
+    } catch (error) {
+      throw new Error(
+        `Failed to find product at index ${index}. Either the product doesn't exist or is not visible.`
+      );
+    }
   }
 }

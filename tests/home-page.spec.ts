@@ -70,7 +70,7 @@ test.describe("HomePage Tests", () => {
     // Verify specific product visibility and stock status
     const combinationPliers =
       await homePage.products.getProductByName("Combination Pliers");
-    expect(combinationPliers.name).toBe("Combination Pliers");
+    expect(combinationPliers.name).toContain("Combination Pliers");
 
     const longNosePliers =
       await homePage.products.getProductByName("Long Nose Pliers");

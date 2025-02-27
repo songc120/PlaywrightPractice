@@ -2,9 +2,20 @@
 import { Page } from "@playwright/test";
 import { CategoryFilter } from "./category-filter";
 
+/**
+ * Represents the filters component.
+ * Handles product filtering operations.
+ */
 export class Filters {
   private page: Page;
   private categoryFilter: CategoryFilter;
+  private readonly selectors = {
+    searchInput: '[data-test="search-query"]',
+    sortDropdown: '[data-test="sort-select"]',
+    priceMin: '[data-test="price-min"]',
+    priceMax: '[data-test="price-max"]',
+    categoryCheckbox: (name: string) => `[data-test="category-${name}"]`,
+  };
 
   constructor(page: Page) {
     this.page = page;
@@ -22,6 +33,19 @@ export class Filters {
   private brandCheckbox = (brandId: string) =>
     this.page.locator(`[data-test="brand-${brandId}"]`);
 
+  /**
+   * Searches for a product
+   * @param query - Search term
+   */
+  async searchProduct(query: string): Promise<void> {
+    await this.page.fill(this.selectors.searchInput, query);
+    await this.page.keyboard.press("Enter");
+  }
+
+  /**
+   * Selects a sort option
+   * @param option - Sort option to select
+   */
   async selectSortOption(
     option: "name,asc" | "name,desc" | "price,asc" | "price,desc"
   ) {
@@ -156,10 +180,10 @@ export class Filters {
     return parseFloat(maxValue || "0");
   }
 
-  async searchProduct(query: string) {
-    await this.searchInput().fill(query);
-    await this.searchSubmit().click();
-  }
+  // async searchProduct(query: string) {
+  //   await this.searchInput().fill(query);
+  //   await this.searchSubmit().click();
+  // }
 
   async resetSearch() {
     await this.searchReset().click();
