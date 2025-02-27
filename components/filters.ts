@@ -4,7 +4,7 @@ import { CategoryFilter } from "./category-filter";
 
 /**
  * Represents the filters component.
- * Handles product filtering operations.
+ * Handles product filtering operations including search, sort, price range, and category filters.
  */
 export class Filters {
   private page: Page;
@@ -26,6 +26,9 @@ export class Filters {
     this.categoryFilter = new CategoryFilter(page);
   }
 
+  /**
+   * Locators for filter elements
+   */
   private sortDropdown = () => this.page.locator('[data-test="sort"]');
   private priceSliderMin = () => this.page.locator(".ngx-slider-pointer-min");
   private priceSliderMax = () => this.page.locator(".ngx-slider-pointer-max");
@@ -39,7 +42,8 @@ export class Filters {
 
   /**
    * Searches for a product
-   * @param query - Search term
+   * @param query - Search term to filter products
+   * @returns Promise<void>
    */
   async searchProduct(query: string): Promise<void> {
     const input = this.searchInput();
@@ -52,25 +56,46 @@ export class Filters {
   }
 
   /**
-   * Selects a sort option
-   * @param option - Sort option to select
+   * Selects a sort option for products
+   * @param option - Sort option ("name,asc" | "name,desc" | "price,asc" | "price,desc")
+   * @returns Promise<void>
    */
   async selectSortOption(
     option: "name,asc" | "name,desc" | "price,asc" | "price,desc"
-  ) {
-    await this.sortDropdown().selectOption(option);
+  ): Promise<void> {
+    const dropdown = this.sortDropdown();
+    await dropdown.waitFor({ state: "visible", timeout: 5000 });
+    await dropdown.selectOption(option);
+    await this.page.waitForLoadState("networkidle");
   }
 
+  /**
+   * Sets the price range filter
+   * @param min - Minimum price value
+   * @param max - Maximum price value
+   * @throws Error if slider elements are not found or not visible
+   * @returns Promise<void>
+   */
   async setPriceRange(min: number, max: number): Promise<void> {
     const fullTrack = this.sliderFullTrack();
     const slider1 = this.priceSliderMin();
     const slider2 = this.priceSliderMax();
 
-    const trackBox = await fullTrack.boundingBox();
-    const slider1Box = await slider1.boundingBox();
-    const slider2Box = await slider2.boundingBox();
-    if (!trackBox || !slider1Box || !slider2Box)
-      throw new Error("Slider elements not found");
+    await Promise.all([
+      fullTrack.waitFor({ state: "visible", timeout: 5000 }),
+      slider1.waitFor({ state: "visible", timeout: 5000 }),
+      slider2.waitFor({ state: "visible", timeout: 5000 }),
+    ]);
+
+    const [trackBox, slider1Box, slider2Box] = await Promise.all([
+      fullTrack.boundingBox(),
+      slider1.boundingBox(),
+      slider2.boundingBox(),
+    ]);
+
+    if (!trackBox || !slider1Box || !slider2Box) {
+      throw new Error("Slider elements not found or not visible");
+    }
 
     const currentMin = await this.getMinPrice();
     const currentMax = await this.getMaxPrice();
@@ -115,7 +140,14 @@ export class Filters {
     console.log("After move:", await this.getPriceRange());
   }
 
-  async adjustSlider(
+  /**
+   * Adjusts a slider to a target value
+   * @param slider - The slider locator to adjust
+   * @param targetValue - The target value to set
+   * @param yPosition - The y-coordinate for mouse movement
+   * @returns Promise<void>
+   */
+  private async adjustSlider(
     slider: any,
     targetValue: number,
     yPosition: number
@@ -167,30 +199,59 @@ export class Filters {
     }
   }
 
+  /**
+   * Gets the current value of a slider
+   * @param slider - The slider locator
+   * @returns Promise<number> The current slider value
+   */
   async getSliderValue(slider: any): Promise<number> {
     const value = await slider.getAttribute("aria-valuenow");
     return parseFloat(value || "0");
   }
 
+  /**
+   * Gets the current price range values
+   * @throws Error if sliders are not found or not visible
+   * @returns Promise<{min: number, max: number}> The current price range
+   */
   async getPriceRange(): Promise<{ min: number; max: number }> {
-    return {
-      min: await this.getMinPrice(),
-      max: await this.getMaxPrice(),
-    };
+    const minSlider = this.priceSliderMin();
+    const maxSlider = this.priceSliderMax();
+
+    await Promise.all([
+      minSlider.waitFor({ state: "visible", timeout: 5000 }),
+      maxSlider.waitFor({ state: "visible", timeout: 5000 }),
+    ]);
+
+    const [min, max] = await Promise.all([
+      this.getMinPrice(),
+      this.getMaxPrice(),
+    ]);
+
+    return { min, max };
   }
 
+  /**
+   * Gets the current minimum price value
+   * @returns Promise<number> The minimum price value
+   */
   async getMinPrice(): Promise<number> {
     const minValue = await this.priceSliderMin().getAttribute("aria-valuenow");
     return parseFloat(minValue || "0");
   }
 
+  /**
+   * Gets the current maximum price value
+   * @returns Promise<number> The maximum price value
+   */
   async getMaxPrice(): Promise<number> {
     const maxValue = await this.priceSliderMax().getAttribute("aria-valuenow");
     return parseFloat(maxValue || "0");
   }
 
   /**
-   * Resets the search
+   * Resets the search input
+   * @returns Promise<void>
    */
   async resetSearch(): Promise<void> {
     const reset = this.searchReset();
@@ -200,6 +261,7 @@ export class Filters {
 
   /**
    * Gets the current search query
+   * @returns Promise<string> The current search query
    */
   async getSearchQuery(): Promise<string> {
     const searchInput = this.searchInput();
@@ -207,20 +269,53 @@ export class Filters {
     return await searchInput.inputValue();
   }
 
+  /**
+   * Filters products by category
+   * @param categories - Array of category names to filter by
+   * @returns Promise<void>
+   */
   async filterByCategory(categories: string[]): Promise<void> {
     await this.categoryFilter.filterByCategory(categories);
   }
 
+  /**
+   * Checks if a category is currently selected
+   * @param category - The category name to check
+   * @returns Promise<boolean> True if category is checked
+   */
   async isCategoryChecked(category: string): Promise<boolean> {
     return await this.categoryFilter.isCategoryChecked(category);
   }
 
-  async filterByBrand(brandId: string) {
-    await this.brandCheckbox(brandId).check();
+  /**
+   * Filters products by brand
+   * @param brandId - The brand ID to filter by
+   * @returns Promise<void>
+   */
+  async filterByBrand(brandId: string): Promise<void> {
+    const checkbox = this.brandCheckbox(brandId);
+    await checkbox.waitFor({ state: "visible", timeout: 5000 });
+    if (!(await checkbox.isChecked())) {
+      await checkbox.check();
+      await this.page.waitForLoadState("networkidle");
+    }
   }
 
-  // Expose sortDropdown for assertions
-  getSortDropdown() {
+  /**
+   * Gets the currently selected sort option
+   * @returns Promise<string> The current sort option
+   */
+  async getSelectedSortOption(): Promise<string> {
+    const dropdown = this.sortDropdown();
+    await dropdown.waitFor({ state: "visible", timeout: 5000 });
+    return await dropdown.inputValue();
+  }
+
+  /**
+   * Gets the sort dropdown locator (for assertions)
+   * @returns Locator The sort dropdown locator
+   */
+  getSortDropdown(): any {
     return this.sortDropdown();
   }
 }
