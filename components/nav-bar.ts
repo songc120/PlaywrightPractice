@@ -156,20 +156,12 @@ export class NavBar {
   }
 
   /**
-   * Debug method for brand element
-   * @returns Promise<void>
-   */
-  async debugBrand() {
-    const brandLocator = this.brand();
-    console.log(await brandLocator.boundingBox());
-  }
-
-  /**
    * Checks if brand element is visible
    * @returns Promise<boolean>
    */
   async getBrandVisibility() {
-    this.debugBrand();
+    const brandLocator = this.brand();
+    await brandLocator.waitFor({ state: "visible", timeout: 5000 });
     return await this.brand().isVisible();
   }
 
