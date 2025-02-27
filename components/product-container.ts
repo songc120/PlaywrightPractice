@@ -1,11 +1,28 @@
-import { Page } from "@playwright/test";
+import { Locator, Page } from "@playwright/test";
+
+/**
+ * Interface representing a product's basic information
+ */
+interface ProductInfo {
+  name: string;
+  price: string;
+  isOutOfStock: boolean;
+  id: string;
+}
 
 /**
  * Represents the product container component.
- * Handles operations related to product display and interaction.
+ * Handles operations related to product display, filtering, and interaction.
  */
 export class ProductContainer {
   private page: Page;
+  private readonly selectors = {
+    productCard: 'a.card[data-test^="product-01"]',
+    productName: '[data-test="product-name"]',
+    productPrice: '[data-test="product-price"]',
+    outOfStock: '[data-test="out-of-stock"]',
+    productImage: "img.card-img-top",
+  };
 
   /**
    * Creates an instance of ProductContainer component.
@@ -16,102 +33,211 @@ export class ProductContainer {
   }
 
   /**
-   * Locators for product elements
+   * Private helper methods for locating elements
    */
-  private products = () => this.page.locator('a.card[data-test^="product-"]');
-  private productByName = (name: string) =>
-    this.products().locator(`:has-text("${name}")`);
+  private get productsLocator(): Locator {
+    return this.page.locator(this.selectors.productCard);
+  }
+
+  private getProductLocator(identifier: string | number): Locator {
+    if (typeof identifier === "number") {
+      return this.productsLocator.nth(identifier);
+    }
+    return this.page.locator(this.selectors.productCard).filter({
+      has: this.page.locator(this.selectors.productName, {
+        hasText: identifier,
+      }),
+    });
+  }
+
+  /**
+   * Gets all products currently displayed
+   * @returns Promise<ProductInfo[]> Array of product information
+   */
+  async getAllProducts(): Promise<ProductInfo[]> {
+    const products: ProductInfo[] = [];
+    const count = await this.getProductCount();
+
+    for (let i = 0; i < count; i++) {
+      const product = this.productsLocator.nth(i);
+      products.push({
+        name:
+          (await product.locator(this.selectors.productName).textContent()) ||
+          "",
+        price:
+          (await product.locator(this.selectors.productPrice).textContent()) ||
+          "",
+        isOutOfStock: await product
+          .locator(this.selectors.outOfStock)
+          .isVisible(),
+        id: (await product.getAttribute("data-test")) || "",
+      });
+    }
+    return products;
+  }
 
   /**
    * Gets the total number of products displayed
    * @returns Promise<number> The count of products
    */
   async getProductCount(): Promise<number> {
-    return await this.products().count();
+    await this.page.waitForSelector(this.selectors.productCard, {
+      state: "visible",
+    });
+    return await this.productsLocator.count();
   }
 
   /**
-   * Gets the name of a product by its index
+   * Gets product information by index
    * @param index - The index of the product
-   * @returns Promise<string | null> The product name
+   * @returns Promise<ProductInfo> Product information
+   * @throws Error if product not found
    */
-  async getProductName(index: number): Promise<string | null> {
-    return await this.products()
-      .nth(index)
-      .locator('[data-test="product-name"]')
-      .textContent();
+  async getProductByIndex(index: number): Promise<ProductInfo> {
+    const product = this.getProductLocator(index);
+    try {
+      await product.waitFor({ state: "visible", timeout: 5000 }); // 5 second timeout
+      return {
+        name:
+          (await product.locator(this.selectors.productName).textContent()) ||
+          "",
+        price:
+          (await product.locator(this.selectors.productPrice).textContent()) ||
+          "",
+        isOutOfStock: await product
+          .locator(this.selectors.outOfStock)
+          .isVisible(),
+        id: (await product.getAttribute("data-test")) || "",
+      };
+    } catch (error) {
+      throw new Error(
+        `Failed to find product at index ${index}. Either the product doesn't exist or is not visible.`
+      );
+    }
   }
 
   /**
-   * Gets the price of a product by its index
-   * @param index - The index of the product
-   * @returns Promise<string | null> The product price
-   */
-  async getProductPriceByIndex(index: number): Promise<string | null> {
-    return await this.products()
-      .nth(index)
-      .locator('[data-test="product-price"]')
-      .textContent();
-  }
-
-  /**
-   * Gets the price of a product by its name
+   * Gets product information by name
    * @param name - The name of the product
-   * @returns Promise<string | null> The product price
+   * @returns Promise<ProductInfo> Product information
+   * @throws Error if product not found
    */
-  async getProductPriceByName(name: string): Promise<string | null> {
-    return await this.productByName(name)
-      .locator('[data-test="product-price"]')
-      .textContent();
+  async getProductByName(name: string): Promise<ProductInfo> {
+    const product = this.getProductLocator(name);
+    try {
+      await product.waitFor({ state: "visible", timeout: 5000 }); // 5 second timeout
+      return {
+        name,
+        price:
+          (await product.locator(this.selectors.productPrice).textContent()) ||
+          "",
+        isOutOfStock: await product
+          .locator(this.selectors.outOfStock)
+          .isVisible(),
+        id: (await product.getAttribute("data-test")) || "",
+      };
+    } catch (error) {
+      throw new Error(
+        `Failed to find product "${name}". Either the product doesn't exist or is not visible.`
+      );
+    }
   }
 
   /**
-   * Checks if a product is out of stock by its index
-   * @param index - The index of the product
-   * @returns Promise<boolean> True if product is out of stock
+   * Gets all product prices
+   * @returns Promise<number[]> Array of product prices
    */
-  async isProductOutOfStockByIndex(index: number): Promise<boolean> {
-    return await this.products()
-      .nth(index)
-      .locator('[data-test="out-of-stock"]')
-      .isVisible();
+  async getAllPrices(): Promise<number[]> {
+    const products = await this.getAllProducts();
+    return products.map((product) =>
+      parseFloat(product.price.replace(/[^0-9.]/g, ""))
+    );
   }
 
   /**
-   * Checks if a product is out of stock by its name
-   * @param name - The name of the product
-   * @returns Promise<boolean> True if product is out of stock
+   * Verifies if products are sorted by price
+   * @param order - 'asc' or 'desc'
+   * @returns Promise<boolean>
    */
-  async isProductOutOfStockByName(name: string): Promise<boolean> {
-    return await this.productByName(name)
-      .locator('[data-test="out-of-stock"]')
-      .isVisible();
-  }
-
-  /**
-   * Checks if a product is displayed by its name
-   * @param name - The name of the product
-   * @returns Promise<boolean> True if product is visible
-   */
-  async isProductDisplayed(name: string): Promise<boolean> {
-    return await this.productByName(name).isVisible();
+  async areProductsSortedByPrice(order: "asc" | "desc"): Promise<boolean> {
+    const prices = await this.getAllPrices();
+    const sortedPrices = [...prices].sort((a, b) =>
+      order === "asc" ? a - b : b - a
+    );
+    return JSON.stringify(prices) === JSON.stringify(sortedPrices);
   }
 
   /**
    * Clicks on a product by its index
    * @param index - The index of the product
    * @returns Promise<void>
+   * @throws Error if product not found
    */
   async clickProduct(index: number): Promise<void> {
-    await this.products().nth(index).click();
+    const product = this.getProductLocator(index);
+    try {
+      await product.waitFor({ state: "visible", timeout: 5000 }); // 5 second timeout
+      await product.click();
+    } catch (error) {
+      throw new Error(
+        `Failed to find or click product at index ${index}. Either the product doesn't exist or is not visible.`
+      );
+    }
   }
 
   /**
    * Clicks on a product by its name
    * @param name - The name of the product
    * @returns Promise<void>
+   * @throws Error if product not found
    */
   async clickProductByName(name: string): Promise<void> {
-    await this.productByName(name).click();
+    const product = this.getProductLocator(name);
+    try {
+      await product.waitFor({ state: "visible", timeout: 5000 }); // 5 second timeout
+      await product.click();
+    } catch (error) {
+      throw new Error(
+        `Failed to find or click product "${name}". Either the product doesn't exist or is not visible.`
+      );
+    }
+  }
+
+  /**
+   * Gets all out of stock products
+   * @returns Promise<ProductInfo[]>
+   */
+  async getOutOfStockProducts(): Promise<ProductInfo[]> {
+    const allProducts = await this.getAllProducts();
+    return allProducts.filter((product) => product.isOutOfStock);
+  }
+
+  /**
+   * Verifies if all products are within a price range
+   * @param min - Minimum price
+   * @param max - Maximum price
+   * @returns Promise<boolean>
+   */
+  async areProductsInPriceRange(min: number, max: number): Promise<boolean> {
+    const prices = await this.getAllPrices();
+    return prices.every((price) => price >= min && price <= max);
+  }
+
+  /**
+   * Gets product image URL by name
+   * @param name - The name of the product
+   * @returns Promise<string> The image URL
+   * @throws Error if product not found
+   */
+  async getProductImageUrl(name: string): Promise<string> {
+    const product = this.getProductLocator(name);
+    if (!(await product.isVisible())) {
+      throw new Error(`Product "${name}" not found`);
+    }
+    return (
+      (await product
+        .locator(this.selectors.productImage)
+        .getAttribute("src")) || ""
+    );
   }
 }
