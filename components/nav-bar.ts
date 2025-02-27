@@ -1,14 +1,24 @@
 import { Page } from "@playwright/test";
 
+/**
+ * Represents the navigation bar component.
+ * Handles all navigation-related operations and menu interactions.
+ */
 export class NavBar {
   private page: Page;
 
+  /**
+   * Creates an instance of NavBar component.
+   * @param page - The Playwright Page object
+   */
   constructor(page: Page) {
     this.page = page;
   }
 
+  /**
+   * Locators for main navigation elements
+   */
   private brand = () => this.page.locator("a.navbar-brand");
-
   private home = () => this.page.locator('[data-test="nav-home"]');
   private categories = () => this.page.locator('[data-test="nav-categories"]');
   private contact = () => this.page.locator('[data-test="nav-contact"]');
@@ -17,7 +27,9 @@ export class NavBar {
   private languageSelect = () =>
     this.page.locator('[data-test="language-select"]');
 
-  //Options under categories
+  /**
+   * Locators for category navigation options
+   */
   private handToolsButton = () =>
     this.page.locator('[data-test="nav-hand-tools"]');
   private powerToolsButton = () =>
@@ -27,7 +39,9 @@ export class NavBar {
     this.page.locator('[data-test="nav-special-tools"]');
   private rentalsButton = () => this.page.locator('[data-test="nav-rentals"]');
 
-  //Options under userMenu
+  /**
+   * Locators for user menu options
+   */
   private myAccountButton = () =>
     this.page.locator('[data-test="nav-my-account"]');
   private myFavoritesButton = () =>
@@ -40,7 +54,9 @@ export class NavBar {
     this.page.locator('[data-test="nav-my-messages"]');
   private logoutButton = () => this.page.locator('[data-test="nav-sign-out"]');
 
-  //Options under languageSelect
+  /**
+   * Locators for language selection options
+   */
   private deButton = () => this.page.locator('[data-test="lang-de"]');
   private enButton = () => this.page.locator('[data-test="lang-en"]');
   private esButton = () => this.page.locator('[data-test="lang-es"]');
@@ -48,35 +64,62 @@ export class NavBar {
   private nlButton = () => this.page.locator('[data-test="lang-nl"]');
   private trButton = () => this.page.locator('[data-test="lang-tr"]');
 
+  /**
+   * Clicks the brand logo/link
+   * @returns Promise<void>
+   */
   async clickBrand() {
     await this.brand().click();
   }
 
+  /**
+   * Navigates to home page
+   * @returns Promise<void>
+   */
   async clickHome() {
     await this.home().click();
   }
 
+  /**
+   * Opens categories dropdown menu
+   * @returns Promise<void>
+   */
   async clickCategories() {
     await this.categories().click();
   }
 
+  /**
+   * Navigates to contact page
+   * @returns Promise<void>
+   */
   async clickContact() {
     await this.contact().click();
   }
 
+  /**
+   * Clicks sign in button
+   * @returns Promise<void>
+   */
   async clickSignIn() {
     await this.signInButton().click();
   }
 
+  /**
+   * Opens user navigation menu
+   * @returns Promise<void>
+   */
   async openNavMenu() {
     await this.userMenu().click();
   }
 
+  /**
+   * Changes website language
+   * @param language - Language code to switch to
+   * @returns Promise<void>
+   * @throws Error if language is not supported
+   */
   async selectLanguage(language: "de" | "en" | "es" | "fr" | "nl" | "tr") {
-    // Click to open the language dropdown
     await this.languageSelect().click();
-
-    // Click the specific language option
     switch (language) {
       case "de":
         await this.deButton().click();
@@ -101,28 +144,49 @@ export class NavBar {
     }
   }
 
+  /**
+   * Gets currently selected language
+   * @returns Promise<string> The current language code
+   * @throws Error if language select has no text
+   */
   async getSelectedLanguage(): Promise<string> {
     const text = await this.languageSelect().textContent();
     if (!text) throw new Error("Language select button has no text");
-    // Extract language code (e.g., "EN" -> "en"), trimming icon and caret
     return text.replace(/[^a-zA-Z]/g, "").toLowerCase();
   }
 
+  /**
+   * Debug method for brand element
+   * @returns Promise<void>
+   */
   async debugBrand() {
     const brandLocator = this.brand();
     console.log(await brandLocator.boundingBox());
   }
+
+  /**
+   * Checks if brand element is visible
+   * @returns Promise<boolean>
+   */
   async getBrandVisibility() {
     this.debugBrand();
     return await this.brand().isVisible();
   }
 
+  /**
+   * Gets user menu text content
+   * @returns Promise<string | null>
+   */
   async getUserMenuText() {
     return await this.userMenu().textContent();
   }
 
+  /**
+   * Performs logout operation
+   * @returns Promise<void>
+   */
   async logout() {
-    this.openNavMenu(); // Expand menu
+    this.openNavMenu();
     await this.logoutButton().click();
   }
 }
