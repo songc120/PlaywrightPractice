@@ -23,6 +23,8 @@ export class NavBar {
   private categories = () => this.page.locator('[data-test="nav-categories"]');
   private contact = () => this.page.locator('[data-test="nav-contact"]');
   private signInButton = () => this.page.locator('[data-test="nav-sign-in"]');
+  private cart = () => this.page.locator('[data-test="nav-cart"]');
+  private cartQuantity = () => this.page.locator('[data-test="cart-quantity"]');
   private userMenu = () => this.page.locator('[data-test="nav-menu"]');
   private languageSelect = () =>
     this.page.locator('[data-test="language-select"]');

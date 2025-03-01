@@ -202,10 +202,14 @@ export class ProductDetailsPage {
   }
 
   async hasSuccessToast(): Promise<boolean> {
+    await this.successToast
+      .first()
+      .waitFor({ state: "visible", timeout: 5000 });
     return await this.successToast.first().isVisible();
   }
 
   async hasErrorToast(): Promise<boolean> {
+    await this.errorToast.first().waitFor({ state: "visible", timeout: 5000 });
     return await this.errorToast.first().isVisible();
   }
 }
