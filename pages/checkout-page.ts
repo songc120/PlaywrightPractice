@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { CartItem } from "../components/cart-item";
 
 /**
@@ -112,6 +112,7 @@ export class CheckoutPage {
   }
 
   async getAllCartItems(): Promise<CartItem[]> {
+    await this.cartItems.first().waitFor({ state: "visible" });
     const count = await this.cartItems.count();
     return Array.from(
       { length: count },
@@ -131,11 +132,32 @@ export class CheckoutPage {
   }
 
   /**
+   * Gets the total quantity of all items in cart
+   * @returns Promise<number> Sum of all item quantities
+   */
+  async getTotalItemCount(): Promise<number> {
+    const cartItems = await this.getAllCartItems();
+    const quantities = await Promise.all(
+      cartItems.map(async (item) => (await item.getDetails()).quantity)
+    );
+    return quantities.reduce((sum, qty) => sum + qty, 0);
+  }
+
+  /**
    * Removes a specific item from cart
    * @param index - The index of the item to remove (0-based)
    */
   async removeItem(index: number): Promise<void> {
-    await this.removeItemBtns.nth(index).click();
+    const cartItem = await this.getCartItem(index);
+    const itemDetails = await cartItem.getDetails();
+    const initialTotal = await this.getTotalItemCount();
+
+    await cartItem.remove();
+
+    // Wait for item to be removed and total count to update
+    await expect
+      .poll(async () => await this.getTotalItemCount())
+      .toBe(initialTotal - itemDetails.quantity);
   }
 
   /**

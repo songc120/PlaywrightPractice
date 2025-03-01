@@ -1,4 +1,4 @@
-import { Locator } from "@playwright/test";
+import { Locator, expect } from "@playwright/test";
 
 /**
  * Represents a cart item component in the checkout page.
@@ -61,15 +61,28 @@ export class CartItem {
    * Updates the quantity for this cart item
    * @param value - The new quantity to set
    */
-  async updateQuantity(value: number): Promise<void> {
-    await this.quantity.fill(value.toString());
+  async updateQuantity(newQuantity: number) {
+    await this.quantity.fill(String(newQuantity));
     await this.quantity.press("Enter");
+    // Wait for quantity update
+    await expect
+      .poll(async () => parseInt((await this.quantity.inputValue()) || "0"))
+      .toBe(newQuantity);
+    // Wait for price update
+    const initialPrice = parseFloat(
+      (await this.price.textContent())?.replace("$", "") || "0"
+    );
+    await expect
+      .poll(async () =>
+        parseFloat((await this.total.textContent())?.replace("$", "") || "0")
+      )
+      .toBe(initialPrice * newQuantity);
   }
 
   /**
    * Removes this item from the cart
    */
-  async remove(): Promise<void> {
+  async remove() {
     await this.removeButton.click();
   }
 }
