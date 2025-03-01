@@ -1,4 +1,5 @@
 import { Locator, Page } from "@playwright/test";
+import { CartItem } from "../components/cart-item";
 
 /**
  * Represents the checkout page of the e-commerce application.
@@ -10,19 +11,21 @@ import { Locator, Page } from "@playwright/test";
  */
 export class CheckoutPage {
   // Cart step locators
-  /** Locator for the product title in cart */
-  private readonly productTitle: Locator;
-  /** Locator for the product quantity input */
-  private readonly productQuantity: Locator;
-  /** Locator for the product unit price */
-  private readonly productPrice: Locator;
-  /** Locator for the line item total price */
-  private readonly linePrice: Locator;
+  /** Locator for all product rows in cart */
+  private readonly productRows: Locator;
+  /** Locator for the product titles in cart */
+  private readonly productTitles: Locator;
+  /** Locator for the product quantities */
+  private readonly productQuantities: Locator;
+  /** Locator for the product prices */
+  private readonly productPrices: Locator;
+  /** Locator for the line item totals */
+  private readonly linePrices: Locator;
   /** Locator for the cart total amount */
   private readonly cartTotal: Locator;
-  /** Locator for the remove item button */
-  private readonly removeItemBtn: Locator;
-  /** Locator for the proceed to next step button */
+  /** Locator for the remove item buttons */
+  private readonly removeItemBtns: Locator;
+  /** Locator for the proceed button */
   private readonly proceedBtn: Locator;
 
   // Login step locators
@@ -60,6 +63,8 @@ export class CheckoutPage {
   /** Locator for success toast messages */
   private readonly successToast: Locator;
 
+  private readonly cartItems: Locator;
+
   /**
    * Creates an instance of CheckoutPage.
    * Initializes all locators needed for the checkout process.
@@ -67,12 +72,13 @@ export class CheckoutPage {
    */
   constructor(private page: Page) {
     // Cart locators
-    this.productTitle = page.locator('[data-test="product-title"]');
-    this.productQuantity = page.locator('[data-test="product-quantity"]');
-    this.productPrice = page.locator('[data-test="product-price"]');
-    this.linePrice = page.locator('[data-test="line-price"]');
+    this.productRows = page.locator("tbody tr");
+    this.productTitles = page.locator('[data-test="product-title"]');
+    this.productQuantities = page.locator('[data-test="product-quantity"]');
+    this.productPrices = page.locator('[data-test="product-price"]');
+    this.linePrices = page.locator('[data-test="line-price"]');
     this.cartTotal = page.locator('[data-test="cart-total"]');
-    this.removeItemBtn = page.locator(".btn-danger");
+    this.removeItemBtns = page.locator(".btn-danger");
     this.proceedBtn = page.locator('[data-test="proceed-1"]');
 
     // Login locators
@@ -97,58 +103,39 @@ export class CheckoutPage {
     this.confirmPaymentBtn = page.locator('[data-test="finish"]');
 
     this.successToast = page.locator(".toast-success .toast-message");
+
+    this.cartItems = page.locator("tbody tr");
+  }
+
+  async getCartItem(index: number): Promise<CartItem> {
+    return new CartItem(this.cartItems.nth(index));
+  }
+
+  async getAllCartItems(): Promise<CartItem[]> {
+    const count = await this.cartItems.count();
+    return Array.from(
+      { length: count },
+      (_, i) => new CartItem(this.cartItems.nth(i))
+    );
   }
 
   /**
-   * Retrieves details of the current cart item.
-   * @returns Promise<Object> containing:
-   * - title: The product title
-   * - quantity: The current quantity
-   * - price: The unit price
-   * - total: The line item total
-   */
-  async getCartItemDetails(): Promise<{
-    title: string;
-    quantity: number;
-    price: number;
-    total: number;
-  }> {
-    return {
-      title: (await this.productTitle.textContent())?.trim() || "",
-      quantity: parseInt((await this.productQuantity.inputValue()) || "0"),
-      price: parseFloat(
-        (await this.productPrice.textContent())?.replace("$", "") || "0"
-      ),
-      total: parseFloat(
-        (await this.linePrice.textContent())?.replace("$", "") || "0"
-      ),
-    };
-  }
-
-  /**
-   * Gets the total amount for all items in the cart.
-   * @returns Promise<number> The cart total amount
-   */
-  async getCartTotal(): Promise<number> {
-    const total = (await this.cartTotal.textContent())?.replace("$", "") || "0";
-    return parseFloat(total);
-  }
-
-  /**
-   * Updates the quantity of the current cart item.
+   * Updates quantity for a specific cart item
+   * @param index - The index of the item in cart (0-based)
    * @param quantity - The new quantity to set
    */
-  async updateQuantity(quantity: number): Promise<void> {
-    await this.productQuantity.fill(quantity.toString());
-    await this.productQuantity.press("Enter");
+  async updateQuantity(index: number, quantity: number): Promise<void> {
+    await this.productQuantities.nth(index).fill(quantity.toString());
+    await this.productQuantities.nth(index).press("Enter");
     await this.successToast.waitFor({ state: "visible" });
   }
 
   /**
-   * Removes the current item from the cart.
+   * Removes a specific item from cart
+   * @param index - The index of the item to remove (0-based)
    */
-  async removeItem(): Promise<void> {
-    await this.removeItemBtn.click();
+  async removeItem(index: number): Promise<void> {
+    await this.removeItemBtns.nth(index).click();
   }
 
   /**
