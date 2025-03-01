@@ -2,7 +2,7 @@
 description: 
 globs: 
 ---
-# Cursor Rule v1.3 - Feb 27, 2025
+# Cursor Rule v1.4 - Feb 27, 2025
 
 # Core Expertise
 - Specialize in TypeScript and Playwright for end-to-end testing.
@@ -15,8 +15,9 @@ globs:
 - Write concise, readable test cases with clear `expect` assertions.
 - Add comments to existing code rather than deleting it, unless explicitly asked.
 - Store locators (not raw selectors) as class attributes in `pages/` and `components/`:
-  - Define in the constructor (e.g., `this.loginButtonLocator = page.locator('#login-btn')`).
-  - Use in methods for actions and assertions (e.g., `await this.loginButtonLocator.click()`).
+  - Define each locator in the constructor as a readonly property (e.g., `this.loginButtonLocator = page.locator('#login-btn')`).
+  - Use these locators directly in methods for actions and assertions (e.g., `await this.loginButtonLocator.click()`).
+  - Do not store raw selectors as class attributes (e.g., avoid `private readonly selector = '#login-btn'`) or in grouped objects (e.g., `selectors = { key: 'value' }`); convert them to locators at initialization.
 - Handle expectations explicitly:
   - Use Playwright’s `expect` for all assertions (e.g., `await expect(this.loginButtonLocator).toBeVisible()`).
   - Avoid generic checks (e.g., `if` statements) in favor of specific `expect` matchers.

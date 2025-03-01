@@ -15,7 +15,8 @@ This repository contains automated tests using Playwright to practice and showca
 │ └── product-container.ts # Product container component
 ├── pages/
 │ ├── home-page.ts # Home page object
-│ └── login-page.ts # Login page object
+│ ├── login-page.ts # Login page object
+│ └── product-details-page.ts # Product details page object
 ├── tests/ # Test files directory
 └── utils/
 └── constants.ts # Environment variables and constants
@@ -41,18 +42,54 @@ This repository contains automated tests using Playwright to practice and showca
    - Supports language switching
 
 2. **LoginPage (`pages/login-page.ts`)**
+
    - Manages user authentication
    - Handles login form interactions
    - Provides error message retrieval
+
+3. **ProductDetailsPage (`pages/product-details-page.ts`)**
+   - Manages product details view and interactions (quantity, cart, favorites)
 
 ### Components
 
 The project uses reusable components that are shared across different pages:
 
-- Navigation Bar
-- Banner
-- Filters
-- Product Container
+1. **Navigation Bar (`components/nav-bar.ts`)**
+
+   - Handles top navigation menu interactions
+   - Manages language switching
+   - Controls user menu options
+   - Handles category navigation
+   - Manages authentication links (sign in/out)
+
+2. **Banner (`components/banner.ts`)**
+
+   - Manages site banner content and visibility
+   - Handles banner interactions and dismissal
+   - Controls promotional content display
+
+3. **Filters (`components/filters.ts`)**
+
+   - Manages product filtering operations
+   - Handles price range selection
+   - Controls sort options
+   - Manages search functionality
+   - Handles brand filtering
+   - Supports category filtering
+
+4. **Product Container (`components/product-container.ts`)**
+
+   - Manages product grid/list display
+   - Handles product card interactions
+   - Controls product information display
+   - Manages product sorting and filtering results
+   - Provides product data retrieval methods
+
+5. **Category Filter (`components/category-filter.ts`)**
+   - Handles category selection and filtering
+   - Manages category checkbox interactions
+   - Provides category state verification
+   - Controls category-based product filtering
 
 ### Utilities
 
