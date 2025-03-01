@@ -102,4 +102,8 @@ export class HomePage {
   ): Promise<void> {
     await this.navBar.selectLanguage(language);
   }
+
+  async goto() {
+    await this.page.goto("/"); // Assuming root path for home page
+  }
 }
