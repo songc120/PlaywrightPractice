@@ -14,6 +14,7 @@ export class ProductDetailsPage {
   private readonly addToCartBtn: Locator;
   private readonly addToFavoritesBtn: Locator;
   private readonly categoryBadge: Locator;
+  private readonly brandBadge: Locator;
   private readonly image: Locator;
   private readonly relatedProducts: Locator;
 
@@ -26,7 +27,12 @@ export class ProductDetailsPage {
     this.increaseQuantityBtn = page.locator('[data-test="increase-quantity"]');
     this.addToCartBtn = page.locator('[data-test="add-to-cart"]');
     this.addToFavoritesBtn = page.locator('[data-test="add-to-favorites"]');
-    this.categoryBadge = page.locator(".badge.rounded-pill.bg-secondary");
+    this.categoryBadge = page.locator(
+      '[class^="badge rounded-pill bg-secondary"][aria-label="category"]'
+    );
+    this.brandBadge = page.locator(
+      '[class^="badge rounded-pill bg-secondary"][aria-label="brand"]'
+    );
     this.image = page.locator(".figure-img");
     this.relatedProducts = page.locator(".card");
   }
@@ -115,10 +121,23 @@ export class ProductDetailsPage {
    * @returns Promise<string[]> Array of category names
    */
   async getCategories(): Promise<string[]> {
+    await this.categoryBadge
+      .first()
+      .waitFor({ state: "visible", timeout: 5000 });
     const badges = await this.categoryBadge.all();
+    console.log("badges:", badges);
     return Promise.all(
       badges.map(async (badge) => (await badge.textContent()) || "")
     );
+  }
+
+  /**
+   * Gets the product brand
+   * @returns Promise<string> The product brand name
+   */
+  async getBrand(): Promise<string> {
+    await this.brandBadge.waitFor({ state: "visible", timeout: 5000 });
+    return (await this.brandBadge.textContent()) || "";
   }
 
   /**
