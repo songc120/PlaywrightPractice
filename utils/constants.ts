@@ -34,3 +34,12 @@ export const INVALID_EMAIL = process.env.INVALID_EMAIL || "";
 
 /** Invalid format password for validation testing */
 export const INVALID_PASSWORD = process.env.INVALID_PASSWORD || "";
+
+/** Mock address for testing from environment variables */
+export const MOCK_ADDRESS = {
+  street: process.env.MOCK_STREET || "123 Test Street",
+  city: process.env.MOCK_CITY || "Test City",
+  state: process.env.MOCK_STATE || "Test State",
+  country: process.env.MOCK_COUNTRY || "Test Country",
+  postalCode: process.env.MOCK_POSTAL_CODE || "12345",
+} as const;

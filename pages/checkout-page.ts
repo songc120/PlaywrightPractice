@@ -1,5 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { CartItem } from "../components/cart-item";
+import { MOCK_ADDRESS } from "../utils/constants";
 
 /**
  * Represents the checkout page of the e-commerce application.
@@ -65,6 +66,11 @@ export class CheckoutPage {
 
   private readonly cartItems: Locator;
 
+  /** Locator for the proceed to next step after login button */
+  private readonly proceedAfterLoginBtn: Locator;
+  /** Locator for the logged in message */
+  private readonly loggedInMessage: Locator;
+
   /**
    * Creates an instance of CheckoutPage.
    * Initializes all locators needed for the checkout process.
@@ -80,6 +86,7 @@ export class CheckoutPage {
     this.cartTotal = page.locator('[data-test="cart-total"]');
     this.removeItemBtns = page.locator(".btn-danger");
     this.proceedBtn = page.locator('[data-test="proceed-1"]');
+    this.proceedAfterLoginBtn = page.locator('[data-test="proceed-2"]');
 
     // Login locators
     this.emailInput = page.locator('[data-test="email"]');
@@ -105,6 +112,10 @@ export class CheckoutPage {
     this.successToast = page.locator(".toast-success .toast-message");
 
     this.cartItems = page.locator("tbody tr");
+
+    // Add new locators
+    this.proceedAfterLoginBtn = page.locator('[data-test="proceed-2"]');
+    this.loggedInMessage = page.locator(".login-form-1 p");
   }
 
   async getCartItem(index: number): Promise<CartItem> {
@@ -164,8 +175,14 @@ export class CheckoutPage {
    * Proceeds to the next step in the checkout process.
    * Order: Cart -> Sign In -> Billing Address -> Payment
    */
-  async proceedToNextStep(): Promise<void> {
-    await this.proceedBtn.click();
+  async proceedToNextStep(index: number): Promise<void> {
+    if (index === 0) {
+      await this.proceedBtn.click();
+    } else if (index === 1) {
+      await this.proceedAfterLoginBtn.click();
+    } else if (index === 2) {
+      await this.proceedToPaymentBtn.click();
+    }
   }
 
   /**
@@ -252,5 +269,32 @@ export class CheckoutPage {
   async getSuccessToastMessage(): Promise<string> {
     await this.successToast.waitFor({ state: "visible" });
     return (await this.successToast.textContent()) || "";
+  }
+
+  /**
+   * Logs in during checkout process
+   * @param email - User's email
+   * @param password - User's password
+   * @returns Promise<void>
+   */
+  async login(email: string, password: string): Promise<void> {
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    await this.loginSubmitBtn.click();
+
+    // Wait for successful login
+    await expect(this.loggedInMessage).toBeVisible();
+    await expect(this.loggedInMessage).toContainText(
+      "you are already logged in"
+    );
+    await expect(this.proceedAfterLoginBtn).toBeEnabled();
+  }
+
+  /**
+   * Checks if user is logged in
+   * @returns Promise<boolean> True if user is logged in
+   */
+  async isLoggedIn(): Promise<boolean> {
+    return await this.loggedInMessage.isVisible();
   }
 }
