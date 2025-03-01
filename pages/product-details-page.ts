@@ -17,6 +17,9 @@ export class ProductDetailsPage {
   private readonly brandBadge: Locator;
   private readonly image: Locator;
   private readonly relatedProducts: Locator;
+  private readonly toastMessage: Locator;
+  private readonly successToast: Locator;
+  private readonly errorToast: Locator;
 
   constructor(private page: Page) {
     this.name = page.locator('[data-test="product-name"]');
@@ -35,6 +38,9 @@ export class ProductDetailsPage {
     );
     this.image = page.locator(".figure-img");
     this.relatedProducts = page.locator(".card");
+    this.toastMessage = this.page.locator(".toast-message");
+    this.successToast = this.page.locator(".toast-success .toast-message");
+    this.errorToast = this.page.locator(".toast-error .toast-message");
   }
 
   /**
@@ -154,6 +160,9 @@ export class ProductDetailsPage {
    * @returns Promise<{name: string, url: string}[]> Array of related product info
    */
   async getRelatedProducts(): Promise<Array<{ name: string; url: string }>> {
+    await this.relatedProducts
+      .first()
+      .waitFor({ state: "visible", timeout: 5000 });
     const products = await this.relatedProducts.all();
     return Promise.all(
       products.map(async (product) => {
@@ -162,5 +171,41 @@ export class ProductDetailsPage {
         return { name: name.trim(), url };
       })
     );
+  }
+
+  async getToastMessages(): Promise<string[]> {
+    await this.toastMessage
+      .first()
+      .waitFor({ state: "visible", timeout: 5000 });
+    const toasts = await this.toastMessage.all();
+    return Promise.all(
+      toasts.map(async (toast) => (await toast.textContent()) || "")
+    );
+  }
+
+  async getSuccessToastMessages(): Promise<string[]> {
+    await this.successToast
+      .first()
+      .waitFor({ state: "visible", timeout: 5000 });
+    const toasts = await this.successToast.all();
+    return Promise.all(
+      toasts.map(async (toast) => (await toast.textContent()) || "")
+    );
+  }
+
+  async getErrorToastMessages(): Promise<string[]> {
+    await this.errorToast.first().waitFor({ state: "visible", timeout: 5000 });
+    const toasts = await this.errorToast.all();
+    return Promise.all(
+      toasts.map(async (toast) => (await toast.textContent()) || "")
+    );
+  }
+
+  async hasSuccessToast(): Promise<boolean> {
+    return await this.successToast.first().isVisible();
+  }
+
+  async hasErrorToast(): Promise<boolean> {
+    return await this.errorToast.first().isVisible();
   }
 }
