@@ -13,10 +13,12 @@ This repository contains automated tests using Playwright to practice and showca
 │ ├── banner.ts # Banner component
 │ ├── filters.ts # Filters component
 │ └── product-container.ts # Product container component
+│ └── cart-item.ts        # Added cart item component
 ├── pages/
 │ ├── home-page.ts # Home page object
 │ ├── login-page.ts # Login page object
 │ └── product-details-page.ts # Product details page object
+│ └── checkout-page.ts    # Added checkout page handling
 ├── tests/ # Test files directory
 └── utils/
 └── constants.ts # Environment variables and constants
@@ -48,7 +50,30 @@ This repository contains automated tests using Playwright to practice and showca
    - Provides error message retrieval
 
 3. **ProductDetailsPage (`pages/product-details-page.ts`)**
+
    - Manages product details view and interactions (quantity, cart, favorites)
+   - Handles product information display:
+     - Name, price, description
+     - Categories and brand
+     - Product images
+   - Manages quantity controls:
+     - Direct input
+     - Increment/decrement buttons
+   - Handles cart interactions:
+     - Add to cart
+     - Quantity validation
+   - Manages favorites:
+     - Add to favorites (logged in users)
+     - Handle unauthorized state
+   - Displays related products
+   - Handles toast notifications:
+     - Success messages
+     - Error messages
+     - Validation feedback
+
+4. **CheckoutPage (`pages/checkout-page.ts`)**
+   - Manages checkout process
+   - Handles payment and order confirmation
 
 ### Components
 
@@ -86,10 +111,15 @@ The project uses reusable components that are shared across different pages:
    - Provides product data retrieval methods
 
 5. **Category Filter (`components/category-filter.ts`)**
+
    - Handles category selection and filtering
    - Manages category checkbox interactions
    - Provides category state verification
    - Controls category-based product filtering
+
+6. **Cart Item (`components/cart-item.ts`)**
+   - Manages cart item display and interactions
+   - Provides cart item data retrieval methods
 
 ### Utilities
 
@@ -109,6 +139,28 @@ The following environment variables are required:
 - `NOT_USER_EMAIL` / `NOT_USER_PASSWORD`
 - `INVALID_EMAIL` / `INVALID_PASSWORD`
 
+# Mock Address
+
+MOCK_STREET
+MOCK_CITY
+MOCK_STATE
+MOCK_COUNTRY
+MOCK_POSTAL_CODE
+
+# Mock Credit Card
+
+MOCK_CARD_NUMBER
+MOCK_CARD_EXPIRY
+MOCK_CARD_CVV
+MOCK_CARD_HOLDER
+
+# Invalid Credit Card
+
+INVALID_CARD_NUMBER
+INVALID_CARD_EXPIRY
+INVALID_CARD_CVV
+INVALID_CARD_HOLDER
+
 ## Test Execution
 
 Tests can be run locally using:
@@ -122,3 +174,31 @@ GitHub Actions will automatically run tests on push/PR to main/master branches.
 ## Reports
 
 Test reports are automatically generated and stored as artifacts in GitHub Actions, retained for 30 days.
+
+## 4. Checkout Functionality
+
+### Cart Management
+
+- View cart contents
+- Update item quantities
+- Remove items from cart
+- Calculate cart totals
+
+### Authentication Flow
+
+- Proceed from cart to login
+- Handle logged-in user state
+- Navigate through checkout steps
+
+### Billing Address
+
+- Fill billing address form
+- Validate required fields
+- Handle address validation
+
+### Payment Processing
+
+- Select payment method
+- Fill credit card details
+- Handle card validation
+- Process payment confirmation

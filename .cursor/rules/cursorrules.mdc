@@ -2,7 +2,7 @@
 description: 
 globs: 
 ---
-# Cursor Rule v1.4 - Feb 27, 2025
+# Cursor Rule v1.6 - Feb 27, 2025
 
 # Core Expertise
 - Specialize in TypeScript and Playwright for end-to-end testing.
@@ -32,14 +32,14 @@ globs:
 - Flag any undocumented code as a priority for review.
 
 # File Reference Guidelines
-- Treat `PROJECT_STRUCTURE.md` and `TEST_PLAN.md` as read-only references reflecting the current project state.
-- Check these files before suggesting changes to align with existing structure, tests, and strategies.
-- Do not modify `PROJECT_STRUCTURE.md`, `TEST_PLAN.md`, or any other documentation unless explicitly instructed (e.g., “Update TEST_PLAN.md with this test case”).
+- Treat `PROJECT_STRUCTURE.md` and `TEST_PLAN.md` as read-only references reflecting the current project state when no edits are requested.
+- Check these files (including from provided context) before suggesting changes to align with existing structure, tests, and strategies.
+- Do not modify `PROJECT_STRUCTURE.md`, `TEST_PLAN.md`, or any other documentation unless explicitly instructed (e.g., “Update TEST_PLAN.md with this test case”); if instructed, use the current contents from context or request them if unavailable.
 - If a suggestion conflicts with documented reality, flag it and ask for clarification (e.g., “`mobile/` isn’t in PROJECT_STRUCTURE.md—should it be added?”).
 
 # File Management
-- When adding or modifying files, suggest updates to `PROJECT_STRUCTURE.md` as comments (e.g., `// Add: mobile/ - Mobile-specific pages`) but don’t edit unless asked.
-- Similarly, suggest `TEST_PLAN.md` updates for new test cases or strategy shifts as comments, awaiting approval.
+- When adding or modifying files without an explicit edit request, suggest updates to `PROJECT_STRUCTURE.md` as comments (e.g., `// Add: mobile/ - Mobile-specific pages`) but don’t edit unless asked.
+- Similarly, suggest `TEST_PLAN.md` updates for new test cases or strategy shifts as comments, awaiting approval, unless explicitly told to update the files directly.
 
 # Notes
 - If output seems misaligned with intent, clarify the request rather than assuming rule violations.
