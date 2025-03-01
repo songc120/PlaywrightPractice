@@ -77,7 +77,6 @@ test.describe("Checkout Page", () => {
   test("should handle cart item removal", async () => {
     const cartItems = await checkoutPage.getAllCartItems();
     const initialCount = cartItems.length;
-    console.log("initialCount", initialCount);
 
     await checkoutPage.removeItem(0);
 
