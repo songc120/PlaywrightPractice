@@ -1,4 +1,5 @@
-import { Locator, expect } from "@playwright/test";
+import { Locator } from "@playwright/test";
+import { BaseComponent } from "../utils/base-component";
 
 /**
  * Represents a cart item component in the checkout page.
@@ -7,7 +8,7 @@ import { Locator, expect } from "@playwright/test";
  * - Updating quantity
  * - Removing item from cart
  */
-export class CartItem {
+export class CartItem extends BaseComponent {
   /** Locator for the product title */
   private readonly title: Locator;
   /** Locator for the quantity input */
@@ -24,6 +25,7 @@ export class CartItem {
    * @param root - The root Locator for this cart item row
    */
   constructor(private root: Locator) {
+    super(root.page());
     this.title = root.locator('[data-test="product-title"]');
     this.quantity = root.locator('[data-test="product-quantity"]');
     this.price = root.locator('[data-test="product-price"]');
@@ -65,24 +67,22 @@ export class CartItem {
     await this.quantity.fill(String(newQuantity));
     await this.quantity.press("Enter");
     // Wait for quantity update
-    await expect
-      .poll(async () => parseInt((await this.quantity.inputValue()) || "0"))
-      .toBe(newQuantity);
+    await this.expect(async () =>
+      parseInt((await this.quantity.inputValue()) || "0")
+    ).toBe(newQuantity);
     // Wait for price update
     const initialPrice = parseFloat(
       (await this.price.textContent())?.replace("$", "") || "0"
     );
-    await expect
-      .poll(async () =>
-        parseFloat((await this.total.textContent())?.replace("$", "") || "0")
-      )
-      .toBe(initialPrice * newQuantity);
+    await this.expect(async () =>
+      parseFloat((await this.total.textContent())?.replace("$", "") || "0")
+    ).toBe(initialPrice * newQuantity);
   }
 
   /**
    * Removes this item from the cart
    */
   async remove() {
-    await this.removeButton.click();
+    await this.waitAndClick(this.removeButton);
   }
 }

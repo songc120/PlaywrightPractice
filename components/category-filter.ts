@@ -1,19 +1,18 @@
 // components/category-filter.ts
-import { Page } from "@playwright/test";
+import { Page, Locator } from "@playwright/test";
+import { BaseComponent } from "../utils/base-component";
 
 /**
  * Represents the category filter component.
  * Handles filtering products by their categories.
  */
-export class CategoryFilter {
-  private page: Page;
-
+export class CategoryFilter extends BaseComponent {
   /**
    * Creates an instance of CategoryFilter component.
    * @param page - The Playwright Page object
    */
   constructor(page: Page) {
-    this.page = page;
+    super(page);
   }
 
   /**
@@ -21,11 +20,12 @@ export class CategoryFilter {
    * @param categoryText - The text label of the category
    * @returns Locator for the category checkbox
    */
-  private categoryCheckbox = (categoryText: string) =>
-    this.page
+  private getCategoryCheckbox(categoryText: string): Locator {
+    return this.page
       .locator(`label`)
       .filter({ hasText: categoryText })
       .locator('input[type="checkbox"]');
+  }
 
   /**
    * Filters products by selecting multiple categories
@@ -33,12 +33,11 @@ export class CategoryFilter {
    */
   async filterByCategory(categories: string[]): Promise<void> {
     for (const category of categories) {
-      const checkbox = this.categoryCheckbox(category);
+      const checkbox = this.getCategoryCheckbox(category);
       await checkbox.waitFor({ state: "visible", timeout: 5000 });
 
       if (!(await checkbox.isChecked())) {
-        await checkbox.check();
-        // Wait for filtering to complete
+        await this.waitAndClick(checkbox);
         await this.page.waitForLoadState("networkidle");
       }
     }
@@ -50,6 +49,6 @@ export class CategoryFilter {
    * @returns Promise<boolean> True if category is checked
    */
   async isCategoryChecked(category: string): Promise<boolean> {
-    return await this.categoryCheckbox(category).isChecked();
+    return await this.getCategoryCheckbox(category).isChecked();
   }
 }

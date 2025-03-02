@@ -4,13 +4,14 @@ import { Banner } from "../components/banner";
 import { Filters } from "../components/filters";
 import { ProductContainer } from "../components/product-container";
 import { BASE_URL } from "../utils/constants";
+import { BaseComponent } from "../utils/base-component";
 
 /**
  * Represents the Home Page of the practice software testing website.
  * Handles all interactions and operations available on the main page.
  */
-export class HomePage {
-  private page: Page;
+export class HomePage extends BaseComponent {
+  protected page: Page;
   public navBar: NavBar;
   public banner: Banner;
   public filters: Filters;
@@ -21,6 +22,7 @@ export class HomePage {
    * @param page - The Playwright Page object
    */
   constructor(page: Page) {
+    super(page);
     this.page = page;
     this.navBar = new NavBar(page);
     this.banner = new Banner(page);

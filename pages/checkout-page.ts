@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { CartItem } from "../components/cart-item";
 import { MOCK_ADDRESS, MOCK_CREDIT_CARD } from "../utils/constants";
+import { BaseComponent } from "../utils/base-component";
 
 /**
  * Represents the checkout page of the e-commerce application.
@@ -10,7 +11,7 @@ import { MOCK_ADDRESS, MOCK_CREDIT_CARD } from "../utils/constants";
  * 3. Billing Address - Address information collection
  * 4. Payment - Payment method selection and confirmation
  */
-export class CheckoutPage {
+export class CheckoutPage extends BaseComponent {
   // Cart step locators
   /** Locator for all product rows in cart */
   private readonly productRows: Locator;
@@ -90,7 +91,8 @@ export class CheckoutPage {
    * Initializes all locators needed for the checkout process.
    * @param page - The Playwright Page object
    */
-  constructor(private page: Page) {
+  constructor(page: Page) {
+    super(page);
     // Cart locators
     this.productRows = page.locator("tbody tr");
     this.productTitles = page.locator('[data-test="product-title"]');
@@ -128,7 +130,6 @@ export class CheckoutPage {
     this.cartItems = page.locator("tbody tr");
 
     // Add new locators
-    this.proceedAfterLoginBtn = page.locator('[data-test="proceed-2"]');
     this.loggedInMessage = page.locator(".login-form-1 p");
 
     // Credit card form locators
@@ -198,30 +199,30 @@ export class CheckoutPage {
     await cartItem.remove();
 
     // Wait for item to be removed and total count to update
-    await expect
-      .poll(async () => await this.getTotalItemCount())
-      .toBe(initialTotal - itemDetails.quantity);
+    await this.expect(async () => await this.getTotalItemCount()).toBe(
+      initialTotal - itemDetails.quantity
+    );
   }
 
   /**
    * Proceeds from cart to sign in step
    */
   async proceedFromCartToSignIn(): Promise<void> {
-    await this.proceedBtn.click();
+    await this.waitAndClick(this.proceedBtn);
   }
 
   /**
    * Proceeds from sign in to billing address step
    */
   async proceedFromSignInToBilling(): Promise<void> {
-    await this.proceedAfterLoginBtn.click();
+    await this.waitAndClick(this.proceedAfterLoginBtn);
   }
 
   /**
    * Proceeds from billing address to payment step
    */
   async proceedFromBillingToPayment(): Promise<void> {
-    await this.proceedToPaymentBtn.click();
+    await this.waitAndClick(this.proceedToPaymentBtn);
   }
 
   /**
@@ -287,7 +288,7 @@ export class CheckoutPage {
    * @returns Promise<void>
    */
   async confirmPayment(): Promise<void> {
-    await this.confirmPaymentBtn.click();
+    await this.waitAndClick(this.confirmPaymentBtn);
     await expect(this.paymentSuccessMessage).toBeVisible();
     await expect(this.paymentSuccessMessage).toHaveText(
       "Payment was successful"
@@ -340,19 +341,11 @@ export class CheckoutPage {
     await this.passwordInput.fill(password);
     await this.loginSubmitBtn.click();
 
-    // Wait for successful login with separate assertions and failure messages
-    await expect(
-      this.loggedInMessage,
-      "Login message should be visible"
-    ).toBeVisible();
-    await expect(
-      this.loggedInMessage,
-      "Login message should indicate user is logged in"
-    ).toContainText("you are already logged in");
-    await expect(
-      this.proceedAfterLoginBtn,
-      "Proceed button should be enabled after login"
-    ).toBeEnabled();
+    await expect(this.loggedInMessage).toBeVisible();
+    await expect(this.loggedInMessage).toContainText(
+      "you are already logged in"
+    );
+    await expect(this.proceedAfterLoginBtn).toBeEnabled();
   }
 
   /**

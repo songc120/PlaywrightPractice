@@ -1,10 +1,12 @@
 import { Locator, Page } from "@playwright/test";
+import { BaseComponent } from "../utils/base-component";
+import { expect } from "@playwright/test";
 
 /**
  * Represents the product details page.
  * Handles interactions with product information, quantity controls, and related actions.
  */
-export class ProductDetailsPage {
+export class ProductDetailsPage extends BaseComponent {
   private readonly name: Locator;
   private readonly price: Locator;
   private readonly description: Locator;
@@ -21,7 +23,8 @@ export class ProductDetailsPage {
   private readonly successToast: Locator;
   private readonly errorToast: Locator;
 
-  constructor(private page: Page) {
+  constructor(page: Page) {
+    super(page);
     this.name = page.locator('[data-test="product-name"]');
     this.price = page.locator('[data-test="unit-price"]');
     this.description = page.locator('[data-test="product-description"]');
@@ -94,32 +97,44 @@ export class ProductDetailsPage {
    * Increases the quantity by clicking the plus button
    */
   async increaseQuantity(): Promise<void> {
-    await this.increaseQuantityBtn.waitFor({ state: "visible", timeout: 5000 });
-    await this.increaseQuantityBtn.click();
+    const currentQty = await this.getQuantity();
+    await this.waitAndClick(this.increaseQuantityBtn);
+    await this.expect(async () => await this.getQuantity()).toBe(
+      currentQty + 1
+    );
   }
 
   /**
    * Decreases the quantity by clicking the minus button
    */
   async decreaseQuantity(): Promise<void> {
-    await this.decreaseQuantityBtn.waitFor({ state: "visible", timeout: 5000 });
-    await this.decreaseQuantityBtn.click();
+    const currentQty = await this.getQuantity();
+    if (currentQty > 1) {
+      await this.waitAndClick(this.decreaseQuantityBtn);
+      await this.expect(async () => await this.getQuantity()).toBe(
+        currentQty - 1
+      );
+    }
   }
 
   /**
    * Adds the product to cart
    */
   async addToCart(): Promise<void> {
-    await this.addToCartBtn.waitFor({ state: "visible", timeout: 5000 });
-    await this.addToCartBtn.click();
+    await this.waitAndClick(this.addToCartBtn);
+    await expect(this.successToast.or(this.errorToast)).toBeVisible({
+      timeout: 5000,
+    });
   }
 
   /**
    * Adds the product to favorites
    */
   async addToFavorites(): Promise<void> {
-    await this.addToFavoritesBtn.waitFor({ state: "visible", timeout: 5000 });
-    await this.addToFavoritesBtn.click();
+    await this.waitAndClick(this.addToFavoritesBtn);
+    await expect(this.successToast.or(this.errorToast)).toBeVisible({
+      timeout: 5000,
+    });
   }
 
   /**

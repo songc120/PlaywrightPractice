@@ -2,7 +2,7 @@
 description: 
 globs: *
 ---
-# Cursor Rule v1.6 - Feb 27, 2025
+# Cursor Rule v1.9 - Mar 1, 2025
 
 # Core Expertise
 - Specialize in TypeScript and Playwright for end-to-end testing.
@@ -18,6 +18,13 @@ globs: *
   - Define each locator in the constructor as a readonly property (e.g., `this.loginButtonLocator = page.locator('#login-btn')`).
   - Use these locators directly in methods for actions and assertions (e.g., `await this.loginButtonLocator.click()`).
   - Do not store raw selectors as class attributes (e.g., avoid `private readonly selector = '#login-btn'`) or in grouped objects (e.g., `selectors = { key: 'value' }`); convert them to locators at initialization.
+- In class methods, await element visibility or readiness before actions or assertions (e.g., `await expect(this.locator).toBeVisible('Element should be visible')`), unless the action implicitly waits (e.g., `click()`).
+- Use BaseComponent for shared functionality:
+  - All page objects and components should extend BaseComponent
+  - BaseComponent provides common utilities (e.g., `waitAndClick`, `waitAndFill`)
+  - Pass Page object through constructor to BaseComponent
+  - Use protected methods from BaseComponent instead of implementing custom wait logic
+  - Example: `class NavBar extends BaseComponent { constructor(page: Page) { super(page); } }`
 - Handle expectations explicitly:
   - Use Playwright’s `expect` for all assertions (e.g., `await expect(this.loginButtonLocator).toBeVisible()`).
   - Avoid generic checks (e.g., `if` statements) in favor of specific `expect` matchers.

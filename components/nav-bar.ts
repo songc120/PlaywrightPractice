@@ -1,11 +1,11 @@
 import { Page, Locator } from "@playwright/test";
+import { BaseComponent } from "../utils/base-component";
 
 /**
  * Represents the navigation bar component.
  * Handles all navigation-related operations and menu interactions.
  */
-export class NavBar {
-  private page: Page;
+export class NavBar extends BaseComponent {
   private readonly brand: Locator;
   private readonly home: Locator;
   private readonly categories: Locator;
@@ -37,7 +37,7 @@ export class NavBar {
    * @param page - The Playwright Page object
    */
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.brand = page.locator("a.navbar-brand");
     this.home = page.locator('[data-test="nav-home"]');
     this.categories = page.locator('[data-test="nav-categories"]');
@@ -61,15 +61,6 @@ export class NavBar {
     this.nlButton = page.locator('[data-test="lang-nl"]');
     this.trButton = page.locator('[data-test="lang-tr"]');
     this.logoutButton = page.locator('[data-test="nav-sign-out"]');
-  }
-
-  /**
-   * Helper method to wait for and click an element
-   * @param locator - The Playwright Locator
-   */
-  private async waitAndClick(locator: Locator): Promise<void> {
-    await locator.waitFor({ state: "visible", timeout: 5000 });
-    await locator.click();
   }
 
   /**

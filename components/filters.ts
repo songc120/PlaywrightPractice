@@ -1,44 +1,35 @@
 // components/filters.ts
-import { Page } from "@playwright/test";
+import { Page, Locator } from "@playwright/test";
 import { CategoryFilter } from "./category-filter";
+import { BaseComponent } from "../utils/base-component";
 
 /**
  * Represents the filters component.
  * Handles product filtering operations including search, sort, price range, and category filters.
  */
-export class Filters {
-  private page: Page;
+export class Filters extends BaseComponent {
+  private readonly searchInput: Locator;
+  private readonly searchSubmit: Locator;
+  private readonly searchReset: Locator;
+  private readonly sortDropdown: Locator;
+  private readonly priceSliderMin: Locator;
+  private readonly priceSliderMax: Locator;
+  private readonly sliderFullTrack: Locator;
+  private readonly sliderTrack: Locator;
   private categoryFilter: CategoryFilter;
-  private readonly selectors = {
-    searchInput: '[data-test="search-query"]',
-    searchSubmit: '[data-test="search-submit"]',
-    searchReset: '[data-test="search-reset"]',
-    sortDropdown: '[data-test="sort"]',
-    priceSliderMin: ".ngx-slider-pointer-min",
-    priceSliderMax: ".ngx-slider-pointer-max",
-    sliderFullTrack: ".ngx-slider-full-bar",
-    sliderTrack: ".ngx-slider-selection",
-    categoryCheckbox: (name: string) => `[data-test="category-${name}"]`,
-  };
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
+    this.searchInput = page.locator('[data-test="search-query"]');
+    this.searchSubmit = page.locator('[data-test="search-submit"]');
+    this.searchReset = page.locator('[data-test="search-reset"]');
+    this.sortDropdown = page.locator('[data-test="sort"]');
+    this.priceSliderMin = page.locator(".ngx-slider-pointer-min");
+    this.priceSliderMax = page.locator(".ngx-slider-pointer-max");
+    this.sliderFullTrack = page.locator(".ngx-slider-full-bar");
+    this.sliderTrack = page.locator(".ngx-slider-selection");
     this.categoryFilter = new CategoryFilter(page);
   }
-
-  /**
-   * Locators for filter elements
-   */
-  private sortDropdown = () => this.page.locator('[data-test="sort"]');
-  private priceSliderMin = () => this.page.locator(".ngx-slider-pointer-min");
-  private priceSliderMax = () => this.page.locator(".ngx-slider-pointer-max");
-  private sliderFullTrack = () => this.page.locator(".ngx-slider-full-bar");
-  private sliderTrack = () => this.page.locator(".ngx-slider-selection");
-  private searchInput = () => this.page.locator('[data-test="search-query"]');
-  private searchSubmit = () => this.page.locator('[data-test="search-submit"]');
-  private searchReset = () => this.page.locator('[data-test="search-reset"]');
-  private brandCheckbox = (brandId: string) =>
-    this.page.locator(`[data-test="brand-${brandId}"]`);
 
   /**
    * Searches for a product
@@ -46,11 +37,11 @@ export class Filters {
    * @returns Promise<void>
    */
   async searchProduct(query: string): Promise<void> {
-    const input = this.searchInput();
+    const input = this.searchInput;
     await input.waitFor({ state: "visible", timeout: 5000 });
     await input.fill(query);
 
-    const submit = this.searchSubmit();
+    const submit = this.searchSubmit;
     await submit.waitFor({ state: "visible", timeout: 5000 });
     await submit.click();
   }
@@ -63,7 +54,7 @@ export class Filters {
   async selectSortOption(
     option: "name,asc" | "name,desc" | "price,asc" | "price,desc"
   ): Promise<void> {
-    const dropdown = this.sortDropdown();
+    const dropdown = this.sortDropdown;
     await dropdown.waitFor({ state: "visible", timeout: 5000 });
     await dropdown.selectOption(option);
     await this.page.waitForLoadState("networkidle");
@@ -77,9 +68,9 @@ export class Filters {
    * @returns Promise<void>
    */
   async setPriceRange(min: number, max: number): Promise<void> {
-    const fullTrack = this.sliderFullTrack();
-    const slider1 = this.priceSliderMin();
-    const slider2 = this.priceSliderMax();
+    const fullTrack = this.sliderFullTrack;
+    const slider1 = this.priceSliderMin;
+    const slider2 = this.priceSliderMax;
 
     await Promise.all([
       fullTrack.waitFor({ state: "visible", timeout: 5000 }),
@@ -126,13 +117,13 @@ export class Filters {
     const finalMax = await this.getMaxPrice();
     if (Math.abs(finalMin - min) > 0.5)
       await this.adjustSlider(
-        this.priceSliderMin(),
+        this.priceSliderMin,
         min,
         trackBox.y + trackBox.height / 2
       );
     if (Math.abs(finalMax - max) > 0.5)
       await this.adjustSlider(
-        this.priceSliderMax(),
+        this.priceSliderMax,
         max,
         trackBox.y + trackBox.height / 2
       );
@@ -215,8 +206,8 @@ export class Filters {
    * @returns Promise<{min: number, max: number}> The current price range
    */
   async getPriceRange(): Promise<{ min: number; max: number }> {
-    const minSlider = this.priceSliderMin();
-    const maxSlider = this.priceSliderMax();
+    const minSlider = this.priceSliderMin;
+    const maxSlider = this.priceSliderMax;
 
     await Promise.all([
       minSlider.waitFor({ state: "visible", timeout: 5000 }),
@@ -236,7 +227,7 @@ export class Filters {
    * @returns Promise<number> The minimum price value
    */
   async getMinPrice(): Promise<number> {
-    const minValue = await this.priceSliderMin().getAttribute("aria-valuenow");
+    const minValue = await this.priceSliderMin.getAttribute("aria-valuenow");
     return parseFloat(minValue || "0");
   }
 
@@ -245,7 +236,7 @@ export class Filters {
    * @returns Promise<number> The maximum price value
    */
   async getMaxPrice(): Promise<number> {
-    const maxValue = await this.priceSliderMax().getAttribute("aria-valuenow");
+    const maxValue = await this.priceSliderMax.getAttribute("aria-valuenow");
     return parseFloat(maxValue || "0");
   }
 
@@ -254,7 +245,7 @@ export class Filters {
    * @returns Promise<void>
    */
   async resetSearch(): Promise<void> {
-    const reset = this.searchReset();
+    const reset = this.searchReset;
     await reset.waitFor({ state: "visible", timeout: 5000 });
     await reset.click();
   }
@@ -264,7 +255,7 @@ export class Filters {
    * @returns Promise<string> The current search query
    */
   async getSearchQuery(): Promise<string> {
-    const searchInput = this.searchInput();
+    const searchInput = this.searchInput;
     await searchInput.waitFor({ state: "visible", timeout: 5000 });
     return await searchInput.inputValue();
   }
@@ -293,7 +284,7 @@ export class Filters {
    * @returns Promise<void>
    */
   async filterByBrand(brandId: string): Promise<void> {
-    const checkbox = this.brandCheckbox(brandId);
+    const checkbox = this.getBrandCheckbox(brandId);
     await checkbox.waitFor({ state: "visible", timeout: 5000 });
     if (!(await checkbox.isChecked())) {
       await checkbox.check();
@@ -306,7 +297,7 @@ export class Filters {
    * @returns Promise<string> The current sort option
    */
   async getSelectedSortOption(): Promise<string> {
-    const dropdown = this.sortDropdown();
+    const dropdown = this.sortDropdown;
     await dropdown.waitFor({ state: "visible", timeout: 5000 });
     return await dropdown.inputValue();
   }
@@ -316,6 +307,10 @@ export class Filters {
    * @returns Locator The sort dropdown locator
    */
   getSortDropdown(): any {
-    return this.sortDropdown();
+    return this.sortDropdown;
+  }
+
+  private getBrandCheckbox(brandId: string): Locator {
+    return this.page.locator(`[data-test="brand-${brandId}"]`);
   }
 }

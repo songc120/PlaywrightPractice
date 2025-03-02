@@ -1,12 +1,12 @@
 import { Page, Locator } from "@playwright/test";
+import { BaseComponent } from "../utils/base-component";
 import { NavBar } from "../components/nav-bar";
 
 /**
  * Represents the Login Page of the practice software testing website.
  * Handles user authentication and login-related operations.
  */
-export class LoginPage {
-  private page: Page;
+export class LoginPage extends BaseComponent {
   private navBar: NavBar;
   private readonly emailInput: Locator;
   private readonly passwordInput: Locator;
@@ -20,7 +20,7 @@ export class LoginPage {
    * @param page - The Playwright Page object
    */
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.navBar = new NavBar(page);
     this.emailInput = page.locator('[data-test="email"]');
     this.passwordInput = page.locator('[data-test="password"]');

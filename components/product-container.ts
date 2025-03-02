@@ -1,4 +1,5 @@
 import { Locator, Page } from "@playwright/test";
+import { BaseComponent } from "../utils/base-component";
 
 /**
  * Interface representing a product's basic information
@@ -14,8 +15,7 @@ interface ProductInfo {
  * Represents the product container component.
  * Handles operations related to product display, filtering, and interaction.
  */
-export class ProductContainer {
-  private page: Page;
+export class ProductContainer extends BaseComponent {
   private readonly selectors = {
     productCard: 'a.card[data-test^="product-01"]',
     productName: '[data-test="product-name"]',
@@ -29,7 +29,7 @@ export class ProductContainer {
    * @param page - The Playwright Page object
    */
   constructor(page: Page) {
-    this.page = page;
+    super(page);
   }
 
   /**
@@ -163,8 +163,7 @@ export class ProductContainer {
   async clickProduct(index: number): Promise<void> {
     const product = this.getProductLocator(index);
     try {
-      await product.waitFor({ state: "visible", timeout: 5000 }); // 5 second timeout
-      await product.click();
+      await this.waitAndClick(product);
     } catch (error) {
       throw new Error(
         `Failed to find or click product at index ${index}. Either the product doesn't exist or is not visible.`
@@ -181,8 +180,7 @@ export class ProductContainer {
   async clickProductByName(name: string): Promise<void> {
     const product = this.getProductLocator(name);
     try {
-      await product.waitFor({ state: "visible", timeout: 5000 }); // 5 second timeout
-      await product.click();
+      await this.waitAndClick(product);
     } catch (error) {
       throw new Error(
         `Failed to find or click product "${name}". Either the product doesn't exist or is not visible.`

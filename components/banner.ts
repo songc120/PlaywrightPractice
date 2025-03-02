@@ -1,11 +1,11 @@
 import { Page, Locator } from "@playwright/test";
+import { BaseComponent } from "../utils/base-component";
 
 /**
  * Represents the banner component.
  * Handles operations related to the main banner image.
  */
-export class Banner {
-  private page: Page;
+export class Banner extends BaseComponent {
   private readonly banner: Locator;
   private readonly bannerLink: Locator;
 
@@ -14,7 +14,7 @@ export class Banner {
    * @param page - The Playwright Page object
    */
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.banner = page.locator('img[alt="Banner"]');
     this.bannerLink = page.locator('a:has(img[alt="Banner"])');
   }
@@ -42,7 +42,7 @@ export class Banner {
    */
   async click(): Promise<void> {
     if (await this.bannerLink.isVisible()) {
-      await this.bannerLink.click();
+      await this.waitAndClick(this.bannerLink);
     }
   }
 }
