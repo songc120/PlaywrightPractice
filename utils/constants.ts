@@ -59,3 +59,5 @@ export const INVALID_CREDIT_CARD = {
   cvv: process.env.INVALID_CARD_CVV || "12",
   holderName: process.env.INVALID_CARD_HOLDER || "",
 } as const;
+
+export const BASE_URL = "https://practicesoftwaretesting.com/";

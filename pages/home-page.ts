@@ -3,6 +3,7 @@ import { NavBar } from "../components/nav-bar";
 import { Banner } from "../components/banner";
 import { Filters } from "../components/filters";
 import { ProductContainer } from "../components/product-container";
+import { BASE_URL } from "../utils/constants";
 
 /**
  * Represents the Home Page of the practice software testing website.
@@ -32,7 +33,7 @@ export class HomePage {
    * @returns Promise<void>
    */
   async visit(): Promise<void> {
-    await this.page.goto("https://practicesoftwaretesting.com/");
+    await this.page.goto(BASE_URL);
   }
 
   /**
@@ -75,19 +76,19 @@ export class HomePage {
     await this.navBar.clickCategories();
     switch (category) {
       case "hand-tools":
-        await this.navBar["handToolsButton"]().click();
+        await this.navBar.handToolsButton.click();
         break;
       case "power-tools":
-        await this.navBar["powerToolsButton"]().click();
+        await this.navBar.powerToolsButton.click();
         break;
       case "other":
-        await this.navBar["otherButton"]().click();
+        await this.navBar.otherButton.click();
         break;
       case "special-tools":
-        await this.navBar["specialToolsButton"]().click();
+        await this.navBar.specialToolsButton.click();
         break;
       case "rentals":
-        await this.navBar["rentalsButton"]().click();
+        await this.navBar.rentalsButton.click();
         break;
     }
   }
@@ -103,7 +104,12 @@ export class HomePage {
     await this.navBar.selectLanguage(language);
   }
 
-  async goto() {
-    await this.page.goto("/"); // Assuming root path for home page
+  /**
+   * Navigates to the home page of the application.
+   * @returns Promise<void>
+   * @deprecated Use visit() instead for consistency
+   */
+  async goto(): Promise<void> {
+    await this.visit();
   }
 }

@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page, Locator } from "@playwright/test";
 
 /**
  * Represents the banner component.
@@ -6,6 +6,8 @@ import { Page } from "@playwright/test";
  */
 export class Banner {
   private page: Page;
+  private readonly banner: Locator;
+  private readonly bannerLink: Locator;
 
   /**
    * Creates an instance of Banner component.
@@ -13,21 +15,17 @@ export class Banner {
    */
   constructor(page: Page) {
     this.page = page;
+    this.banner = page.locator('img[alt="Banner"]');
+    this.bannerLink = page.locator('a:has(img[alt="Banner"])');
   }
-
-  /**
-   * Locator for the banner image
-   */
-  private banner = () => this.page.locator('img[alt="Banner"]');
 
   /**
    * Checks if the banner is visible on the page
    * @returns Promise<boolean> True if banner is visible
    */
   async isVisible(): Promise<boolean> {
-    const element = this.banner();
-    await element.waitFor({ state: "visible", timeout: 5000 });
-    return await element.isVisible();
+    await this.banner.waitFor({ state: "visible", timeout: 5000 });
+    return await this.banner.isVisible();
   }
 
   /**
@@ -35,18 +33,16 @@ export class Banner {
    * @returns Promise<string> The image URL
    */
   async getImageUrl(): Promise<string> {
-    const element = this.banner();
-    await element.waitFor({ state: "visible", timeout: 5000 });
-    return (await element.getAttribute("src")) || "";
+    await this.banner.waitFor({ state: "visible", timeout: 5000 });
+    return (await this.banner.getAttribute("src")) || "";
   }
 
   /**
    * Clicks the banner if it's clickable
    */
   async click(): Promise<void> {
-    const bannerLink = this.page.locator('a:has(img[alt="Banner"])');
-    if (await bannerLink.isVisible()) {
-      await bannerLink.click();
+    if (await this.bannerLink.isVisible()) {
+      await this.bannerLink.click();
     }
   }
 }

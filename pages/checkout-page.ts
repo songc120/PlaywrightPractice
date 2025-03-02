@@ -340,12 +340,19 @@ export class CheckoutPage {
     await this.passwordInput.fill(password);
     await this.loginSubmitBtn.click();
 
-    // Wait for successful login
-    await expect(this.loggedInMessage).toBeVisible();
-    await expect(this.loggedInMessage).toContainText(
-      "you are already logged in"
-    );
-    await expect(this.proceedAfterLoginBtn).toBeEnabled();
+    // Wait for successful login with separate assertions and failure messages
+    await expect(
+      this.loggedInMessage,
+      "Login message should be visible"
+    ).toBeVisible();
+    await expect(
+      this.loggedInMessage,
+      "Login message should indicate user is logged in"
+    ).toContainText("you are already logged in");
+    await expect(
+      this.proceedAfterLoginBtn,
+      "Proceed button should be enabled after login"
+    ).toBeEnabled();
   }
 
   /**

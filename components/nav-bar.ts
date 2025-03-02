@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page, Locator } from "@playwright/test";
 
 /**
  * Represents the navigation bar component.
@@ -6,6 +6,31 @@ import { Page } from "@playwright/test";
  */
 export class NavBar {
   private page: Page;
+  private readonly brand: Locator;
+  private readonly home: Locator;
+  private readonly categories: Locator;
+  private readonly contact: Locator;
+  private readonly signInButton: Locator;
+  private readonly cart: Locator;
+  private readonly cartQuantity: Locator;
+  private readonly userMenu: Locator;
+  private readonly languageSelect: Locator;
+
+  // Make these public so HomePage can access them
+  public readonly handToolsButton: Locator;
+  public readonly powerToolsButton: Locator;
+  public readonly otherButton: Locator;
+  public readonly specialToolsButton: Locator;
+  public readonly rentalsButton: Locator;
+
+  // Add language button locators
+  private readonly deButton: Locator;
+  private readonly enButton: Locator;
+  private readonly esButton: Locator;
+  private readonly frButton: Locator;
+  private readonly nlButton: Locator;
+  private readonly trButton: Locator;
+  private readonly logoutButton: Locator;
 
   /**
    * Creates an instance of NavBar component.
@@ -13,67 +38,38 @@ export class NavBar {
    */
   constructor(page: Page) {
     this.page = page;
+    this.brand = page.locator("a.navbar-brand");
+    this.home = page.locator('[data-test="nav-home"]');
+    this.categories = page.locator('[data-test="nav-categories"]');
+    this.contact = page.locator('[data-test="nav-contact"]');
+    this.signInButton = page.locator('[data-test="nav-sign-in"]');
+    this.cart = page.locator('[data-test="nav-cart"]');
+    this.cartQuantity = page.locator('[data-test="cart-quantity"]');
+    this.userMenu = page.locator('[data-test="nav-menu"]');
+    this.languageSelect = page.locator('[data-test="language-select"]');
+    this.handToolsButton = page.locator('[data-test="nav-hand-tools"]');
+    this.powerToolsButton = page.locator('[data-test="nav-power-tools"]');
+    this.otherButton = page.locator('[data-test="nav-other"]');
+    this.specialToolsButton = page.locator('[data-test="nav-special-tools"]');
+    this.rentalsButton = page.locator('[data-test="nav-rentals"]');
+
+    // Add language buttons
+    this.deButton = page.locator('[data-test="lang-de"]');
+    this.enButton = page.locator('[data-test="lang-en"]');
+    this.esButton = page.locator('[data-test="lang-es"]');
+    this.frButton = page.locator('[data-test="lang-fr"]');
+    this.nlButton = page.locator('[data-test="lang-nl"]');
+    this.trButton = page.locator('[data-test="lang-tr"]');
+    this.logoutButton = page.locator('[data-test="nav-sign-out"]');
   }
 
   /**
-   * Locators for main navigation elements
-   */
-  private brand = () => this.page.locator("a.navbar-brand");
-  private home = () => this.page.locator('[data-test="nav-home"]');
-  private categories = () => this.page.locator('[data-test="nav-categories"]');
-  private contact = () => this.page.locator('[data-test="nav-contact"]');
-  private signInButton = () => this.page.locator('[data-test="nav-sign-in"]');
-  private cart = () => this.page.locator('[data-test="nav-cart"]');
-  private cartQuantity = () => this.page.locator('[data-test="cart-quantity"]');
-  private userMenu = () => this.page.locator('[data-test="nav-menu"]');
-  private languageSelect = () =>
-    this.page.locator('[data-test="language-select"]');
-
-  /**
-   * Locators for category navigation options
-   */
-  private handToolsButton = () =>
-    this.page.locator('[data-test="nav-hand-tools"]');
-  private powerToolsButton = () =>
-    this.page.locator('[data-test="nav-power-tools"]');
-  private otherButton = () => this.page.locator('[data-test="nav-other"]');
-  private specialToolsButton = () =>
-    this.page.locator('[data-test="nav-special-tools"]');
-  private rentalsButton = () => this.page.locator('[data-test="nav-rentals"]');
-
-  /**
-   * Locators for user menu options
-   */
-  private myAccountButton = () =>
-    this.page.locator('[data-test="nav-my-account"]');
-  private myFavoritesButton = () =>
-    this.page.locator('[data-test="nav-my-favorites"]');
-  private myProfileButton = () =>
-    this.page.locator('[data-test="nav-my-profile"]');
-  private myInvoicesButton = () =>
-    this.page.locator('[data-test="nav-my-invoices"]');
-  private myMessagesButton = () =>
-    this.page.locator('[data-test="nav-my-messages"]');
-  private logoutButton = () => this.page.locator('[data-test="nav-sign-out"]');
-
-  /**
-   * Locators for language selection options
-   */
-  private deButton = () => this.page.locator('[data-test="lang-de"]');
-  private enButton = () => this.page.locator('[data-test="lang-en"]');
-  private esButton = () => this.page.locator('[data-test="lang-es"]');
-  private frButton = () => this.page.locator('[data-test="lang-fr"]');
-  private nlButton = () => this.page.locator('[data-test="lang-nl"]');
-  private trButton = () => this.page.locator('[data-test="lang-tr"]');
-
-  /**
    * Helper method to wait for and click an element
-   * @param locator - Function that returns a locator
+   * @param locator - The Playwright Locator
    */
-  private async waitAndClick(locator: () => any): Promise<void> {
-    const element = locator();
-    await element.waitFor({ state: "visible", timeout: 5000 });
-    await element.click();
+  private async waitAndClick(locator: Locator): Promise<void> {
+    await locator.waitFor({ state: "visible", timeout: 5000 });
+    await locator.click();
   }
 
   /**
@@ -158,9 +154,8 @@ export class NavBar {
    * @throws Error if language select has no text
    */
   async getSelectedLanguage(): Promise<string> {
-    const element = this.languageSelect();
-    await element.waitFor({ state: "visible", timeout: 5000 });
-    const text = await element.textContent();
+    await this.languageSelect.waitFor({ state: "visible", timeout: 5000 });
+    const text = await this.languageSelect.textContent();
     if (!text) throw new Error("Language select button has no text");
     return text.replace(/[^a-zA-Z]/g, "").toLowerCase();
   }
@@ -170,9 +165,8 @@ export class NavBar {
    * @returns Promise<boolean>
    */
   async getBrandVisibility(): Promise<boolean> {
-    const element = this.brand();
-    await element.waitFor({ state: "visible", timeout: 5000 });
-    return await element.isVisible();
+    await this.brand.waitFor({ state: "visible", timeout: 5000 });
+    return await this.brand.isVisible();
   }
 
   /**
@@ -180,9 +174,8 @@ export class NavBar {
    * @returns Promise<string | null>
    */
   async getUserMenuText(): Promise<string | null> {
-    const element = this.userMenu();
-    await element.waitFor({ state: "visible", timeout: 5000 });
-    return await element.textContent();
+    await this.userMenu.waitFor({ state: "visible", timeout: 5000 });
+    return await this.userMenu.textContent();
   }
 
   /**
