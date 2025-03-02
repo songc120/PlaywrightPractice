@@ -2,46 +2,26 @@
 description: 
 globs: 
 ---
-# Cursor Rule v1.6 - Feb 27, 2025
+# Cursor Rule v1.8 - Feb 27, 2025
 
 # Core Expertise
 - Specialize in TypeScript and Playwright for end-to-end testing.
 
 # Coding Standards
-- Use Page Object Model (POM) with classes in `pages/` (e.g., `home-page.ts`).
-- Prefer async/await syntax over promises for cleaner test code.
-- Interact with UI elements via `components/` (e.g., `nav-bar.ts`).
-- Reference constants from `utils/constants.ts` (e.g., `BASE_URL`) for navigation and assertions.
-- Write concise, readable test cases with clear `expect` assertions.
-- Add comments to existing code rather than deleting it, unless explicitly asked.
-- Store locators (not raw selectors) as class attributes in `pages/` and `components/`:
-  - Define each locator in the constructor as a readonly property (e.g., `this.loginButtonLocator = page.locator('#login-btn')`).
-  - Use these locators directly in methods for actions and assertions (e.g., `await this.loginButtonLocator.click()`).
-  - Do not store raw selectors as class attributes (e.g., avoid `private readonly selector = '#login-btn'`) or in grouped objects (e.g., `selectors = { key: 'value' }`); convert them to locators at initialization.
-- Handle expectations explicitly:
-  - Use Playwright’s `expect` for all assertions (e.g., `await expect(this.loginButtonLocator).toBeVisible()`).
-  - Avoid generic checks (e.g., `if` statements) in favor of specific `expect` matchers.
-  - Include meaningful failure messages where helpful (e.g., `'Button should appear after load'`).
-  - Chain assertions only when logically related; otherwise, split for clarity.
+- Use POM with `pages/` (e.g., `home-page.ts`) and `components/` (e.g., `nav-bar.ts`).
+- Prefer async/await; use `utils/constants.ts` (e.g., `BASE_URL`).
+- Write concise tests with `expect` assertions:
+  - Store locators in constructors (e.g., `this.loginButtonLocator = page.locator('#login-btn')`), not raw selectors.
+  - Use `toContain()` for partial text, `toBe()` for exact matches; add failure messages.
+  - Avoid generic checks; split unrelated chained assertions.
+- Comment, don’t delete, existing code unless asked.
 
 # Documentation
-- Document all classes (e.g., `HomePage` in `pages/`), public methods (e.g., `clickNavItem` in `nav-bar.ts`), and constants (e.g., `BASE_URL` in `utils/constants.ts`) with TypeDoc comments including:
-  - Purpose and usage.
-  - Parameters and return types (if applicable).
-  - Concise, practical examples where helpful (e.g., “See `await navBar.clickNavItem('Home', page)`”).
-- Flag any undocumented code as a priority for review.
+- Add TypeDoc comments (purpose, params, returns, examples) to classes, methods, and constants; flag undocumented code.
 
-# File Reference Guidelines
-- Treat `PROJECT_STRUCTURE.md` and `TEST_PLAN.md` as read-only references reflecting the current project state when no edits are requested.
-- Check these files (including from provided context) before suggesting changes to align with existing structure, tests, and strategies.
-- Do not modify `PROJECT_STRUCTURE.md`, `TEST_PLAN.md`, or any other documentation unless explicitly instructed (e.g., “Update TEST_PLAN.md with this test case”); if instructed, use the current contents from context or request them if unavailable.
-- If a suggestion conflicts with documented reality, flag it and ask for clarification (e.g., “`mobile/` isn’t in PROJECT_STRUCTURE.md—should it be added?”).
-
-# File Management
-- When adding or modifying files without an explicit edit request, suggest updates to `PROJECT_STRUCTURE.md` as comments (e.g., `// Add: mobile/ - Mobile-specific pages`) but don’t edit unless asked.
-- Similarly, suggest `TEST_PLAN.md` updates for new test cases or strategy shifts as comments, awaiting approval, unless explicitly told to update the files directly.
+# File Handling
+- Treat `PROJECT_STRUCTURE.md` and `TEST_PLAN.md` as read-only references (from context/index) unless explicitly told to edit (e.g., “Update TEST_PLAN.md”).
+- Suggest updates as comments (e.g., `// Add: mobile/`) without edit requests; flag conflicts for clarification.
 
 # Notes
-- If output seems misaligned with intent, clarify the request rather than assuming rule violations.
-- Adapt folder references (e.g., `pages/`, `components/`) to match current structure if it evolves, per `PROJECT_STRUCTURE.md`.
-- Optional: Run `npm run check-docs` (if implemented) to verify TypeDoc compliance.
+- Clarify misaligned output; adapt to structure per `PROJECT_STRUCTURE.md`; optionally run `npm run check-docs`.
