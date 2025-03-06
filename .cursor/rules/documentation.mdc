@@ -1,0 +1,11 @@
+---
+description: Set documentation standards for all TypeScript files where documentation is relevant.
+globs: *.ts
+alwaysApply: false
+---
+# Documentation
+- Document all classes (e.g., `ProductsApi` in `api/`, `HomePage` in `pages/`), public methods, and constants with TypeDoc comments including:
+  - Purpose and usage.
+  - Parameters and return types (if applicable).
+  - Concise, practical examples where helpful (e.g., “See `await productsApi.getProduct('1')`”).
+- Flag any undocumented code as a priority for review.

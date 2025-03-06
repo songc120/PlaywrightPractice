@@ -1,0 +1,17 @@
+---
+description: Define coding standards for API testing, targeting files in api/.
+globs: api/*.ts
+alwaysApply: false
+---
+# Coding Standards (API)
+- Use POM-style classes in `api/` (e.g., `products-api.ts`) for API endpoints.
+- Prefer async/await syntax over promises for cleaner test code.
+- Use `APIRequestContext` in `api/` classes; await and assert response status (e.g., `await expect(response.status()).toBe(200)`).
+- Reference constants from `utils/constants.ts` (e.g., `BASE_URL`, `API_TOKEN`) for requests and assertions.
+- Write concise, readable test cases with clear `expect` assertions.
+- Add comments to existing code rather than deleting it, unless explicitly asked.
+- Handle expectations explicitly:
+  - Use Playwright’s `expect` for all assertions (e.g., `await expect(response.status()).toBe(200)`).
+  - Avoid generic checks (e.g., `if` statements) in favor of specific `expect` matchers.
+  - Include meaningful failure messages where helpful (e.g., `'API call should succeed'`).
+  - Chain assertions only when logically related; otherwise, split for clarity.

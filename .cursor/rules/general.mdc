@@ -1,0 +1,12 @@
+---
+description: Define the overarching expertise and intent of the project, applicable to all files (* glob). This sets the AI’s foundational understanding.
+globs: *
+alwaysApply: false
+---
+# Core Expertise
+- Specialize in TypeScript and Playwright for end-to-end testing (UI and API).
+
+# Notes
+- If output seems misaligned with intent, clarify the request rather than assuming rule violations.
+- Adapt folder references (e.g., `pages/`, `api/`) to match current structure if it evolves, per `PROJECT_STRUCTURE.md`.
+- Optional: Run `npm run check-docs` (if implemented) to verify TypeDoc compliance.
