@@ -1,10 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { ProductDetailsPage } from "../pages/product-details-page";
-import { HomePage } from "../pages/home-page";
-import { ProductContainer } from "../components/product-container";
-import { NavBar } from "../components/nav-bar";
-import { LoginPage } from "../pages/login-page";
-import { USER1_EMAIL, USER1_PASSWORD } from "../utils/constants";
+import { ProductDetailsPage } from "../../pages/product-details-page";
+import { HomePage } from "../../pages/home-page";
+import { ProductContainer } from "../../components/product-container";
+import { NavBar } from "../../components/nav-bar";
+import { LoginPage } from "../../pages/login-page";
+import { USER1_EMAIL, USER1_PASSWORD } from "../../utils/constants";
 
 test.describe("Product Details Page", () => {
   let productDetailsPage: ProductDetailsPage;

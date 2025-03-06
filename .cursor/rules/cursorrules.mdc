@@ -1,41 +1,37 @@
 ---
 description: 
 globs: *
+alwaysApply: false
 ---
-# Cursor Rule v1.9 - Mar 1, 2025
+# Cursor Rule v2.0 - Mar.5, 2025
 
 # Core Expertise
-- Specialize in TypeScript and Playwright for end-to-end testing.
+- Specialize in TypeScript and Playwright for end-to-end testing (UI and API).
 
 # Coding Standards
-- Use Page Object Model (POM) with classes in `pages/` (e.g., `home-page.ts`).
+- Use POM-style classes: `pages/` (e.g., `home-page.ts`) for UI, `api/` (e.g., `products-api.ts`) for API.
 - Prefer async/await syntax over promises for cleaner test code.
-- Interact with UI elements via `components/` (e.g., `nav-bar.ts`).
-- Reference constants from `utils/constants.ts` (e.g., `BASE_URL`) for navigation and assertions.
+- Interact with UI via `components/` (e.g., `nav-bar.ts`); use `api/` for API endpoints.
+- Reference constants from `utils/constants.ts` (e.g., `BASE_URL`, `API_TOKEN`) for navigation, requests, and assertions.
 - Write concise, readable test cases with clear `expect` assertions.
 - Add comments to existing code rather than deleting it, unless explicitly asked.
-- Store locators (not raw selectors) as class attributes in `pages/` and `components/`:
+- For UI: Store locators (not raw selectors) as class attributes in `pages/` and `components/`:
   - Define each locator in the constructor as a readonly property (e.g., `this.loginButtonLocator = page.locator('#login-btn')`).
   - Use these locators directly in methods for actions and assertions (e.g., `await this.loginButtonLocator.click()`).
-  - Do not store raw selectors as class attributes (e.g., avoid `private readonly selector = '#login-btn'`) or in grouped objects (e.g., `selectors = { key: 'value' }`); convert them to locators at initialization.
-- In class methods, await element visibility or readiness before actions or assertions (e.g., `await expect(this.locator).toBeVisible('Element should be visible')`), unless the action implicitly waits (e.g., `click()`).
-- Use BaseComponent for shared functionality:
-  - All page objects and components should extend BaseComponent
-  - BaseComponent provides common utilities (e.g., `waitAndClick`, `waitAndFill`)
-  - Pass Page object through constructor to BaseComponent
-  - Use protected methods from BaseComponent instead of implementing custom wait logic
-  - Example: `class NavBar extends BaseComponent { constructor(page: Page) { super(page); } }`
+  - Do not store raw selectors as class attributes or in grouped objects; convert them to locators at initialization.
+- For UI methods, await element visibility or readiness before actions or assertions (e.g., `await expect(this.locator).toBeVisible('Element should be visible')`), unless the action implicitly waits (e.g., `click()`).
+- For API: Use `APIRequestContext` in `api/` classes; await and assert response status (e.g., `await expect(response.status()).toBe(200)`).
 - Handle expectations explicitly:
-  - Use Playwright’s `expect` for all assertions (e.g., `await expect(this.loginButtonLocator).toBeVisible()`).
+  - Use Playwright’s `expect` for all assertions (e.g., `await expect(response.status()).toBe(200)` for API, `await expect(this.locator).toBeVisible()` for UI).
   - Avoid generic checks (e.g., `if` statements) in favor of specific `expect` matchers.
-  - Include meaningful failure messages where helpful (e.g., `'Button should appear after load'`).
+  - Include meaningful failure messages where helpful (e.g., `'API call should succeed'`).
   - Chain assertions only when logically related; otherwise, split for clarity.
 
 # Documentation
-- Document all classes (e.g., `HomePage` in `pages/`), public methods (e.g., `clickNavItem` in `nav-bar.ts`), and constants (e.g., `BASE_URL` in `utils/constants.ts`) with TypeDoc comments including:
+- Document all classes (e.g., `ProductsApi` in `api/`, `HomePage` in `pages/`), public methods, and constants with TypeDoc comments including:
   - Purpose and usage.
   - Parameters and return types (if applicable).
-  - Concise, practical examples where helpful (e.g., “See `await navBar.clickNavItem('Home', page)`”).
+  - Concise, practical examples where helpful (e.g., “See `await productsApi.getProduct('1')`”).
 - Flag any undocumented code as a priority for review.
 
 # File Reference Guidelines
@@ -45,10 +41,10 @@ globs: *
 - If a suggestion conflicts with documented reality, flag it and ask for clarification (e.g., “`mobile/` isn’t in PROJECT_STRUCTURE.md—should it be added?”).
 
 # File Management
-- When adding or modifying files without an explicit edit request, suggest updates to `PROJECT_STRUCTURE.md` as comments (e.g., `// Add: mobile/ - Mobile-specific pages`) but don’t edit unless asked.
+- When adding or modifying files without an explicit edit request, suggest updates to `PROJECT_STRUCTURE.md` as comments (e.g., `// Add: api/ - API testing classes`) but don’t edit unless asked.
 - Similarly, suggest `TEST_PLAN.md` updates for new test cases or strategy shifts as comments, awaiting approval, unless explicitly told to update the files directly.
 
 # Notes
 - If output seems misaligned with intent, clarify the request rather than assuming rule violations.
-- Adapt folder references (e.g., `pages/`, `components/`) to match current structure if it evolves, per `PROJECT_STRUCTURE.md`.
+- Adapt folder references (e.g., `pages/`, `api/`) to match current structure if it evolves, per `PROJECT_STRUCTURE.md`.
 - Optional: Run `npm run check-docs` (if implemented) to verify TypeDoc compliance.

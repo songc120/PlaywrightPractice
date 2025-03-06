@@ -28,6 +28,9 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://127.0.0.1:3000',
     baseURL: "https://practicesoftwaretesting.com",
+    extraHTTPHeaders: {
+      "Content-Type": "application/json",
+    },
     headless: true,
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -47,6 +50,8 @@ export default defineConfig({
       dependencies: ["setup"],
       use: { ...devices["Desktop Chrome"], permissions: ["clipboard-read"] },
     },
+    { name: "api", testDir: "./tests/api" },
+    { name: "ui", testDir: "./tests/ui" },
 
     // {
     //   name: "firefox",
