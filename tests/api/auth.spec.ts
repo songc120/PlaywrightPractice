@@ -9,6 +9,7 @@ import {
   NOT_USER_EMAIL,
   NOT_USER_PASSWORD,
   INVALID_PASSWORD, // Assuming you have a constant for an intentionally wrong password
+  INVALID_REGISTRATION_PASSWORD, // Import the weak password constant
   INVALID_EMAIL, // Add import for invalid email constant
   API_BASE_URL, // Import API_BASE_URL
   MOCK_ADDRESS, // Import mock address
@@ -282,6 +283,36 @@ test.describe("Authentication API", () => {
     // const responseBody = await response.json();
     // await expect(responseBody).toHaveProperty("error");
     // expect(responseBody.error).toContain("firstName is required"); // Adjust message
+  });
+
+  test("should fail to register with invalid password (weak)", async () => {
+    const userData = generateUniqueUserData();
+    // Override the password with the weak one
+    userData.password = INVALID_REGISTRATION_PASSWORD;
+
+    const response = await authApi.register(userData);
+
+    // Assert the attempt fails
+    await expect(
+      response,
+      "Registration with weak password should fail"
+    ).not.toBeOK();
+
+    // Assert specific status code (expecting 422 based on previous validation errors)
+    expect(
+      response.status(),
+      "Status code should be 422 for weak password"
+    ).toBe(422);
+
+    // Optional: Assert specific error message about password complexity
+    // const responseBody = await response.json();
+    // await expect(responseBody).toHaveProperty("password");
+    // expect(responseBody.password).toEqual(expect.arrayContaining([
+    //   expect.stringContaining("uppercase"),
+    //   expect.stringContaining("lowercase"),
+    //   expect.stringContaining("symbol"),
+    //   expect.stringContaining("number"),
+    // ])); // Adjust based on exact error messages
   });
 
   // Add more authentication tests here:

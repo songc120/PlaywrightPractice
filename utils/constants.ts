@@ -27,6 +27,10 @@ export const USER2_PASSWORD = process.env.USER2_EMAIL || "";
 export const VALID_REGISTRATION_PASSWORD =
   process.env.VALID_REGISTRATION_PASSWORD || "";
 
+/** An invalid password failing complexity requirements for registration */
+export const INVALID_REGISTRATION_PASSWORD =
+  process.env.INVALID_REGISTRATION_PASSWORD || "weak"; // Default to 'weak'
+
 /** Non-existent user email for negative testing */
 export const NOT_USER_EMAIL = process.env.NOT_USER_EMAIL || "";
 
