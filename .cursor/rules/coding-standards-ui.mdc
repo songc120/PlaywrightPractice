@@ -1,0 +1,20 @@
+---
+description: Specify coding standards for UI testing, targeting files in pages/ and components/.
+globs: pages/*.ts, components/*.ts
+alwaysApply: false
+---
+# Coding Standards (UI)
+- Use POM-style classes in `pages/` (e.g., `home-page.ts`) for UI pages and `components/` (e.g., `nav-bar.ts`) for reusable UI parts.
+- Prefer async/await syntax over promises for cleaner test code.
+- Store locators (not raw selectors) as class attributes:
+  - Define each locator in the constructor as a readonly property (e.g., `this.loginButtonLocator = page.locator('#login-btn')`).
+  - Use these locators directly in methods for actions and assertions (e.g., `await this.loginButtonLocator.click()`).
+  - Do not store raw selectors as class attributes or in grouped objects; convert them to locators at initialization.
+- For UI methods, await element visibility or readiness before actions or assertions (e.g., `await expect(this.locator).toBeVisible('Element should be visible')`), unless the action implicitly waits (e.g., `click()`).
+- Write concise, readable test cases with clear `expect` assertions.
+- Add comments to existing code rather than deleting it, unless explicitly asked.
+- Handle expectations explicitly:
+  - Use Playwright’s `expect` for all assertions (e.g., `await expect(this.locator).toBeVisible()`).
+  - Avoid generic checks (e.g., `if` statements) in favor of specific `expect` matchers.
+  - Include meaningful failure messages where helpful (e.g., `'Login button should be visible'`).
+  - Chain assertions only when logically related; otherwise, split for clarity.

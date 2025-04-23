@@ -1,14 +1,14 @@
 import { test, expect } from "@playwright/test";
-import { CheckoutPage } from "../pages/checkout-page";
-import { ProductDetailsPage } from "../pages/product-details-page";
-import { HomePage } from "../pages/home-page";
+import { CheckoutPage } from "../../pages/checkout-page";
+import { ProductDetailsPage } from "../../pages/product-details-page";
+import { HomePage } from "../../pages/home-page";
 import {
   USER1_EMAIL,
   USER1_PASSWORD,
   MOCK_ADDRESS,
   MOCK_CREDIT_CARD,
   INVALID_CREDIT_CARD,
-} from "../utils/constants";
+} from "../../utils/constants";
 
 test.describe("Checkout Page", () => {
   let checkoutPage: CheckoutPage;

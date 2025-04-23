@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { LoginPage } from "../pages/login-page";
-import { NavBar } from "../components/nav-bar";
+import { LoginPage } from "../../pages/login-page";
+import { NavBar } from "../../components/nav-bar";
 import {
   USER1_EMAIL,
   USER1_PASSWORD,
@@ -8,7 +8,7 @@ import {
   NOT_USER_PASSWORD,
   INVALID_EMAIL,
   INVALID_PASSWORD,
-} from "../utils/constants";
+} from "../../utils/constants";
 test.describe("Login Tests", () => {
   let loginPage: LoginPage;
   let navBar: NavBar;
