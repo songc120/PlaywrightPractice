@@ -34,5 +34,17 @@ export class AuthAPI {
     return response;
   }
 
-  // Add other auth-related methods here (e.g., register, forgotPassword) as needed
+  /**
+   * Registers a new user via the API.
+   * @param userData - An object containing user registration details (e.g., firstName, lastName, email, password, dob, address, phone, country, postcode).
+   * @returns The APIResponse object.
+   */
+  async register(userData: Record<string, any>): Promise<APIResponse> {
+    const response = await this.request.post(`${API_BASE_URL}/users/register`, {
+      data: userData,
+    });
+    return response;
+  }
+
+  // Add other auth-related methods here (e.g., forgotPassword) as needed
 }
