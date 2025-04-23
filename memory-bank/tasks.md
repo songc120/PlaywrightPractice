@@ -10,8 +10,8 @@ This checklist breaks down the `API_TEST_PLAN.md` into smaller implementation ta
 - [x] Test: Login attempt with non-existent user
 - [x] Test: Login attempt with invalid email format
 - [x] Test: Login attempt with missing email/password fields
-- [ ] Implement: Registration API helper method (if endpoint exists)
-- [ ] Test: Successful user registration
+- [x] Implement: Registration API helper method (if endpoint exists)
+- [x] Test: Successful user registration
 - [ ] Test: Registration attempt with duplicate email
 - [ ] Test: Registration attempt with invalid data (e.g., weak password)
 - [ ] Implement: User Profile API helper methods (get profile, update profile)

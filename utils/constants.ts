@@ -23,6 +23,10 @@ export const USER2_EMAIL = process.env.USER2_EMAIL || "";
 /** Second test user password from environment variables */
 export const USER2_PASSWORD = process.env.USER2_EMAIL || "";
 
+/** A valid password meeting complexity requirements for registration */
+export const VALID_REGISTRATION_PASSWORD =
+  process.env.VALID_REGISTRATION_PASSWORD || "";
+
 /** Non-existent user email for negative testing */
 export const NOT_USER_EMAIL = process.env.NOT_USER_EMAIL || "";
 
