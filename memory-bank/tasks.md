@@ -13,10 +13,10 @@ This checklist breaks down the `API_TEST_PLAN.md` into smaller implementation ta
 - [x] Implement: Registration API helper method (if endpoint exists)
 - [x] Test: Successful user registration
 - [ ] Test: Registration attempt with duplicate email
-- [ ] Test: Registration attempt with invalid data (e.g., weak password)
-- [ ] Implement: User Profile API helper methods (get profile, update profile)
-- [ ] Implement: Users API tests file (`tests/api/users.spec.ts`)
-- [ ] Test: Fetch logged-in user's profile
+- [x] Test: Registration attempt with invalid data (e.g., weak password)
+- [x] Implement: User Profile API helper methods (get profile, update profile)
+- [x] Implement: Users API tests file (`tests/api/users.spec.ts`)
+- [x] Test: Fetch logged-in user's profile
 - [ ] Test: Update logged-in user's profile information
 - [ ] Implement: Address Management API helper methods (add, get, update, delete addresses)
 - [ ] Test: Add a new address for logged-in user
