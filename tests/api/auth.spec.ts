@@ -16,10 +16,12 @@ import {
   MOCK_ADDRESS, // Import mock address
 } from "../../utils/constants";
 import { APIResponse } from "@playwright/test"; // Import APIResponse if needed for type hints
+import { APIRequestContext, request } from "@playwright/test"; // Import APIRequestContext and request for new context management
 
 // Helper function/structure to generate unique user data (snake_case)
 const generateUniqueUserData = () => {
   const timestamp = Date.now();
+  const randomSuffix = Math.random().toString(36).substring(2, 12);
   return {
     first_name: "Test", // snake_case
     last_name: `User-${timestamp}`, // snake_case
@@ -33,7 +35,7 @@ const generateUniqueUserData = () => {
     phone: "1234567890", // Example Phone
     dob: "1990-01-01", // Example Date of Birth
     password: VALID_REGISTRATION_PASSWORD, // Use the valid registration password
-    email: `testuser_${timestamp}@example.com`, // Keep unique email generation
+    email: `testuser_${timestamp}_${randomSuffix}@example.com`, // Ensure unique email
   };
 };
 
@@ -326,10 +328,16 @@ test.describe("Create-Test-Delete Authentication Pattern", () => {
   let testUser: any;
   let userId: string;
   let userToken: string;
+  let apiContext: APIRequestContext;
 
-  test.beforeAll(async ({ request }) => {
-    // Initialize API helper
-    authApi = new AuthAPI(request);
+  test.beforeAll(async () => {
+    // Create API context that persists across tests
+    apiContext = await request.newContext({
+      baseURL: API_BASE_URL,
+    });
+
+    // Initialize API helper with this context
+    authApi = new AuthAPI(apiContext);
 
     // Create a test user
     testUser = generateUniqueUserData();
@@ -357,7 +365,7 @@ test.describe("Create-Test-Delete Authentication Pattern", () => {
   });
 
   test("should login with newly created user credentials", async () => {
-    // Test login with the newly created user
+    // Test login with the newly created user - using the shared context
     const response = await authApi.login(testUser.email, testUser.password);
 
     // Assert successful login
@@ -372,11 +380,9 @@ test.describe("Create-Test-Delete Authentication Pattern", () => {
     ).toHaveProperty("access_token");
   });
 
-  test("should fetch user profile for newly created user", async ({
-    request,
-  }) => {
-    // Create UsersAPI with the token from the new user
-    const usersApi = new UsersAPI(request, userToken);
+  test("should fetch user profile for newly created user", async () => {
+    // Create UsersAPI with the token from the new user and shared context
+    const usersApi = new UsersAPI(apiContext, userToken);
 
     // Fetch user profile
     const profileResponse = await usersApi.getProfile();
@@ -392,14 +398,14 @@ test.describe("Create-Test-Delete Authentication Pattern", () => {
     expect(profileBody.last_name).toBe(testUser.last_name);
   });
 
-  test.afterAll(async ({ request }) => {
-    // Get admin token to delete the user
+  test.afterAll(async () => {
+    // Get admin token to delete the user - using the shared context
     const adminLoginResponse = await authApi.login(ADMIN_EMAIL, ADMIN_PASSWORD);
     const adminBody = await adminLoginResponse.json();
     const adminToken = adminBody.access_token;
 
-    // Initialize UsersAPI with admin token
-    const usersApi = new UsersAPI(request, adminToken);
+    // Initialize UsersAPI with admin token and shared context
+    const usersApi = new UsersAPI(apiContext, adminToken);
 
     // Delete the test user
     if (userId) {
@@ -411,5 +417,8 @@ test.describe("Create-Test-Delete Authentication Pattern", () => {
     } else {
       console.warn("Could not delete test user: user ID not found");
     }
+
+    // Dispose of the API context
+    await apiContext.dispose();
   });
 });
