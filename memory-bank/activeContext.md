@@ -16,9 +16,11 @@
 **Recent Completed Tasks:**
 
 - Fixed `tests/api/categories.spec.ts` by removing dependencies on `testCategoryId` and making test cases self-contained, creating temporary test categories within each test.
+- Fixed `api/images-api.ts` and `tests/api/images.spec.ts` by correcting the API request method from using invalid `.get()` to the proper Playwright `fetch()` method with a 'GET' parameter and fixing authorization token usage in the test.
 
 **Next Steps:**
 
 1. Continue implementing tasks based on the roadmap in `tasks.md`.
 2. Focus on completing Phase 2: Product, Category & Brand Management tasks.
 3. Ensure API helper classes follow consistent patterns with proper TypeDoc documentation.
+4. Review remaining API helper classes to ensure they follow the correct Playwright request pattern using `fetch()` instead of directly using HTTP methods.

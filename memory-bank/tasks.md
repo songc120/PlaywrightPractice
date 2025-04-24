@@ -123,8 +123,10 @@ This checklist breaks down the revised `API_TEST_PLAN.md` into smaller implement
 - [x] Refactor: Make Categories tests self-contained by creating test categories within tests instead of relying on shared variables
 - [ ] Refactor: Make Brands tests self-contained by removing dependency on testBrandId
 - [ ] Refactor: Review Products tests and ensure they are self-contained
-- [ ] Refactor: Review Images tests and ensure they are self-contained
+- [x] Refactor: Review Images tests and ensure they are self-contained
 - [ ] Refactor: Review Users tests for any shared test data dependencies that could be refactored
+- [x] Fix: Update Images API to use correct Playwright request methods
+- [ ] Fix: Review all API helper classes for correct request method usage (using `.fetch()` with method parameter instead of direct HTTP methods like `.get()`)
 
 ## Phase 3: Shopping Cart & Favorites Management
 
