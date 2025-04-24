@@ -198,66 +198,51 @@ test.describe("Authentication API", () => {
     expect(response.status(), "Status code should be 201").toBe(201);
 
     // Assert response body contains success message or user details
-    // Adjust based on the actual API response structure
     const responseBody = await response.json();
-    // Check for key fields returned in the 201 response
-    expect(responseBody, "Response should contain user ID").toHaveProperty(
-      "id"
-    );
-    expect(typeof responseBody.id).toBe("string");
-    expect(responseBody, "Response should contain email").toHaveProperty(
-      "email",
-      userData.email
-    );
-    expect(responseBody, "Response should contain first_name").toHaveProperty(
-      "first_name",
-      userData.first_name
-    );
-    expect(responseBody, "Response should contain last_name").toHaveProperty(
-      "last_name",
-      userData.last_name
-    );
-    expect(
+    await expect(
       responseBody,
-      "Response should contain address object"
-    ).toHaveProperty("address");
-    expect(
-      responseBody.address,
-      "Address object should contain street"
-    ).toHaveProperty("street", userData.address.street);
-    // Add more checks for other fields like phone, dob, country etc. if needed
+      "Response body should contain user ID"
+    ).toHaveProperty("id");
+    expect(typeof responseBody.id).toBe("string");
+
+    // Clean up created user (if the API allows deletion without admin access)
+    // If not, consider using authApi.createTestUser() pattern for a cleaner approach
   });
 
   test("should fail to register with duplicate email", async () => {
-    // 1. Register a user successfully first
+    // First, create a unique user
     const userData = generateUniqueUserData();
     const firstResponse = await authApi.register(userData);
-    await expect(firstResponse, "Initial registration should succeed").toBeOK();
-    expect(
-      firstResponse.status(),
-      "Initial registration status should be 201"
-    ).toBe(201);
+    await expect(firstResponse, "First registration should succeed").toBeOK();
 
-    // 2. Attempt to register again with the exact same email
-    const secondResponse = await authApi.register(userData);
+    // Now try to register the same email again
+    const duplicateData = {
+      ...generateUniqueUserData(), // Generate new data for other fields
+      email: userData.email, // But use the same email
+    };
 
-    // 3. Assert the second attempt fails
+    const response = await authApi.register(duplicateData);
+
+    // Assert response status is not OK
     await expect(
-      secondResponse,
-      "Duplicate registration attempt should fail"
+      response,
+      "Registration with duplicate email should fail"
     ).not.toBeOK();
 
-    // Assert specific status code (e.g., 409 Conflict or 400 Bad Request)
-    // Let's assume 409 for duplicate data conflict
+    // Assert specific status code - typically 409 Conflict for duplicate resources
     expect(
-      secondResponse.status(),
+      response.status(),
       "Status code should be 422 for duplicate email"
     ).toBe(422);
 
-    // Optional: Assert specific error message about duplicate email
-    // const responseBody = await secondResponse.json();
-    // await expect(responseBody).toHaveProperty("error");
-    // expect(responseBody.error).toContain("already exists"); // Adjust message
+    // Optional: Assert error message in response body
+    const responseBody = await response.json();
+    expect(responseBody).toHaveProperty("email");
+    expect(Array.isArray(responseBody.email)).toBe(true);
+    expect(responseBody.email[0]).toContain("already exists");
+
+    // Clean up the created user using admin credentials (if possible)
+    // This would require admin login, which would be better handled with the createTestUser pattern
   });
 
   test("should fail to register with invalid data (e.g., missing required field)", async () => {

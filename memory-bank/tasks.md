@@ -27,39 +27,39 @@ This checklist breaks down the revised `API_TEST_PLAN.md` into smaller implement
 - [x] Test: Login attempt with missing email/password fields
 - [x] Implement: Registration API helper method (`/users/register` POST)
 - [x] Test: Successful user registration
-- [ ] Test: Registration attempt with duplicate email
+- [x] Test: Registration attempt with duplicate email
 - [x] Test: Registration attempt with invalid data (e.g., weak password, invalid DOB format)
 - [x] Implement: User Profile API helper methods (`/users/me` GET, `/users/{userId}` PUT/PATCH - need to clarify if `/users/me` can be updated or only `/users/{userId}`)
 - [x] Implement: Users API tests file (`tests/api/users.spec.ts`)
 - [x] Test: Fetch logged-in user's profile (`/users/me`)
-- [ ] Test: Update logged-in user's profile information (Using `/users/{userId}` PUT/PATCH? Needs clarification)
-- [ ] Implement: Address Management (Confirm how addresses are managed - part of User object?)
-  - [ ] Test: Add/Update address info via User update
-  - [ ] Test: Verify address info in User response
+- [x] Test: Update logged-in user's profile information (Using `/users/{userId}` PUT/PATCH? Needs clarification)
+- [x] Implement: Address Management (Confirm how addresses are managed - part of User object?)
+  - [x] Test: Add/Update address info via User update
+  - [x] Test: Verify address info in User response
 - **NEW Tasks:**
-  - [ ] Implement: Password Management helpers (`/users/forgot-password` POST, `/users/change-password` POST)
-  - [ ] Test: Request password reset (`/users/forgot-password`)
-  - [ ] Test: Change password successfully (`/users/change-password`)
-  - [ ] Test: Change password with incorrect current password
-  - [ ] Test: Change password with non-matching new passwords
-  - [ ] Implement: Session Management helpers (`/users/logout` GET, `/users/refresh` GET)
-  - [ ] Test: Logout user (`/users/logout`) & verify token invalidation
-  - [ ] Test: Refresh token (`/users/refresh`) & verify new token validity
+  - [x] Implement: Password Management helpers (`/users/forgot-password` POST, `/users/change-password` POST)
+  - [x] Test: Request password reset (`/users/forgot-password`)
+  - [x] Test: Change password successfully (`/users/change-password`)
+  - [x] Test: Change password with incorrect current password
+  - [x] Test: Change password with non-matching new passwords
+  - [x] Implement: Session Management helpers (`/users/logout` GET, `/users/refresh` GET)
+  - [x] Test: Logout user (`/users/logout`) & verify token invalidation
+  - [x] Test: Refresh token (`/users/refresh`) & verify new token validity
   - [ ] Implement: TOTP helpers (`/totp/setup` POST, `/totp/verify` POST) (`api/totp-api.ts`)
   - [ ] Implement: TOTP tests file (`tests/api/totp.spec.ts`)
   - [ ] Test: Setup TOTP successfully (`/totp/setup`)
   - [ ] Test: Attempt TOTP setup when already enabled
   - [ ] Test: Verify TOTP code successfully (`/totp/verify`)
   - [ ] Test: Verify TOTP with invalid code
-  - [ ] Implement: User Listing/Search helpers (`/users` GET, `/users/search` GET)
-  - [ ] Test: List all users (Admin) (`/users`)
-  - [ ] Test: List users with pagination (Admin)
-  - [ ] Test: Search users by name/city (Admin) (`/users/search`)
-  - [ ] Implement: Specific User Action helpers (`/users/{userId}` GET, PUT, PATCH, DELETE)
-  - [ ] Test: Get specific user details (Admin) (`/users/{userId}` GET)
-  - [ ] Test: Update specific user (Admin) (`/users/{userId}` PUT/PATCH)
-  - [ ] Test: Delete specific user (Admin) (`/users/{userId}` DELETE)
-  - [ ] Test: Attempt User Admin actions as regular user (should fail)
+  - [x] Implement: User Listing/Search helpers (`/users` GET, `/users/search` GET)
+  - [x] Test: List all users (Admin) (`/users`)
+  - [x] Test: List users with pagination (Admin)
+  - [x] Test: Search users by name/city (Admin) (`/users/search`)
+  - [x] Implement: Specific User Action helpers (`/users/{userId}` GET, PUT, PATCH, DELETE)
+  - [x] Test: Get specific user details (Admin) (`/users/{userId}` GET)
+  - [x] Test: Update specific user (Admin) (`/users/{userId}` PUT/PATCH)
+  - [x] Test: Delete specific user (Admin) (`/users/{userId}` DELETE)
+  - [x] Test: Attempt User Admin actions as regular user (should fail)
 
 ## Phase 2: Product, Category & Brand Management
 
