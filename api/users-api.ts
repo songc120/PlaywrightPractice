@@ -35,6 +35,20 @@ export class UsersAPI {
   }
 
   /**
+   * Fetches a specific user by their ID.
+   * @param userId - The ID of the user to fetch.
+   * @returns The APIResponse object.
+   */
+  async getUser(userId: string): Promise<APIResponse> {
+    const response = await this.request.get(`${API_BASE_URL}/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+    return response;
+  }
+
+  /**
    * Deletes a user by their ID.
    * @param userId - The ID of the user to delete.
    * @returns The APIResponse object.
@@ -48,6 +62,56 @@ export class UsersAPI {
         },
       }
     );
+    return response;
+  }
+
+  /**
+   * Updates the currently authenticated user's profile.
+   * @param userData - The user data to update.
+   * @returns The APIResponse object.
+   */
+  async updateProfile(userData: Record<string, any>): Promise<APIResponse> {
+    // Try PUT first as the API might not support PATCH
+    try {
+      const response = await this.request.put(`${API_BASE_URL}/users/me`, {
+        data: userData,
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return response;
+    } catch (error) {
+      console.warn(`Error in PUT request: ${error}`);
+      // If PUT fails, try with post as fallback
+      const response = await this.request.post(`${API_BASE_URL}/users/me`, {
+        data: userData,
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return response;
+    }
+  }
+
+  /**
+   * Updates a specific user by their ID (admin operation).
+   * @param userId - The ID of the user to update.
+   * @param userData - The user data to update.
+   * @returns The APIResponse object.
+   */
+  async updateUser(
+    userId: string,
+    userData: Record<string, any>
+  ): Promise<APIResponse> {
+    const response = await this.request.put(`${API_BASE_URL}/users/${userId}`, {
+      data: userData,
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/json",
+      },
+    });
     return response;
   }
 
