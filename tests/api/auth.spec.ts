@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { AuthAPI } from "../../api/auth-api";
+import { UsersAPI } from "../../api/users-api";
 import {
   ADMIN_EMAIL,
   ADMIN_PASSWORD,
@@ -317,4 +318,98 @@ test.describe("Authentication API", () => {
 
   // Add more authentication tests here:
   // - Registration attempt with invalid data
+});
+
+// Add new test group for the user creation, test, delete pattern
+test.describe("Create-Test-Delete Authentication Pattern", () => {
+  let authApi: AuthAPI;
+  let testUser: any;
+  let userId: string;
+  let userToken: string;
+
+  test.beforeAll(async ({ request }) => {
+    // Initialize API helper
+    authApi = new AuthAPI(request);
+
+    // Create a test user
+    testUser = generateUniqueUserData();
+    const registerResponse = await authApi.register(testUser);
+    expect(registerResponse.status(), "User registration should succeed").toBe(
+      201
+    );
+
+    // Extract user ID from the registration response if available
+    const registerBody = await registerResponse.json();
+    userId = registerBody.id; // Adjust field name based on actual API response
+
+    // Log in with the new user to get a token
+    const loginResponse = await authApi.login(
+      testUser.email,
+      testUser.password
+    );
+    expect(loginResponse.status(), "Login with new user should succeed").toBe(
+      200
+    );
+
+    // Extract token from login response
+    const loginBody = await loginResponse.json();
+    userToken = loginBody.access_token;
+  });
+
+  test("should login with newly created user credentials", async () => {
+    // Test login with the newly created user
+    const response = await authApi.login(testUser.email, testUser.password);
+
+    // Assert successful login
+    await expect(response, "Login with new user should succeed").toBeOK();
+    expect(response.status(), "Status code should be 200").toBe(200);
+
+    // Verify response has token
+    const responseBody = await response.json();
+    await expect(
+      responseBody,
+      "Response should have access token"
+    ).toHaveProperty("access_token");
+  });
+
+  test("should fetch user profile for newly created user", async ({
+    request,
+  }) => {
+    // Create UsersAPI with the token from the new user
+    const usersApi = new UsersAPI(request, userToken);
+
+    // Fetch user profile
+    const profileResponse = await usersApi.getProfile();
+
+    // Assert successful profile fetch
+    await expect(profileResponse, "Profile fetch should succeed").toBeOK();
+    expect(profileResponse.status(), "Status code should be 200").toBe(200);
+
+    // Verify profile data matches registration data
+    const profileBody = await profileResponse.json();
+    expect(profileBody.email).toBe(testUser.email);
+    expect(profileBody.first_name).toBe(testUser.first_name);
+    expect(profileBody.last_name).toBe(testUser.last_name);
+  });
+
+  test.afterAll(async ({ request }) => {
+    // Get admin token to delete the user
+    const adminLoginResponse = await authApi.login(ADMIN_EMAIL, ADMIN_PASSWORD);
+    const adminBody = await adminLoginResponse.json();
+    const adminToken = adminBody.access_token;
+
+    // Initialize UsersAPI with admin token
+    const usersApi = new UsersAPI(request, adminToken);
+
+    // Delete the test user
+    if (userId) {
+      const deleteResponse = await usersApi.deleteUser(userId);
+      expect(
+        deleteResponse.status(),
+        "User deletion should succeed"
+      ).toBeLessThan(400);
+    } else {
+      console.warn("Could not delete test user: user ID not found");
+    }
+  });
 });

@@ -34,5 +34,22 @@ export class UsersAPI {
     return response;
   }
 
+  /**
+   * Deletes a user by their ID.
+   * @param userId - The ID of the user to delete.
+   * @returns The APIResponse object.
+   */
+  async deleteUser(userId: string): Promise<APIResponse> {
+    const response = await this.request.delete(
+      `${API_BASE_URL}/users/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      }
+    );
+    return response;
+  }
+
   // Add methods for updating profile, managing addresses etc. here
 }
