@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { AuthAPI } from "../../api/auth-api";
+import { UsersAPI } from "../../api/users-api";
 import {
   ADMIN_EMAIL,
   ADMIN_PASSWORD,
@@ -15,10 +16,12 @@ import {
   MOCK_ADDRESS, // Import mock address
 } from "../../utils/constants";
 import { APIResponse } from "@playwright/test"; // Import APIResponse if needed for type hints
+import { APIRequestContext, request } from "@playwright/test"; // Import APIRequestContext and request for new context management
 
 // Helper function/structure to generate unique user data (snake_case)
 const generateUniqueUserData = () => {
   const timestamp = Date.now();
+  const randomSuffix = Math.random().toString(36).substring(2, 12);
   return {
     first_name: "Test", // snake_case
     last_name: `User-${timestamp}`, // snake_case
@@ -32,7 +35,7 @@ const generateUniqueUserData = () => {
     phone: "1234567890", // Example Phone
     dob: "1990-01-01", // Example Date of Birth
     password: VALID_REGISTRATION_PASSWORD, // Use the valid registration password
-    email: `testuser_${timestamp}@example.com`, // Keep unique email generation
+    email: `testuser_${timestamp}_${randomSuffix}@example.com`, // Ensure unique email
   };
 };
 
@@ -317,4 +320,105 @@ test.describe("Authentication API", () => {
 
   // Add more authentication tests here:
   // - Registration attempt with invalid data
+});
+
+// Add new test group for the user creation, test, delete pattern
+test.describe("Create-Test-Delete Authentication Pattern", () => {
+  let authApi: AuthAPI;
+  let testUser: any;
+  let userId: string;
+  let userToken: string;
+  let apiContext: APIRequestContext;
+
+  test.beforeAll(async () => {
+    // Create API context that persists across tests
+    apiContext = await request.newContext({
+      baseURL: API_BASE_URL,
+    });
+
+    // Initialize API helper with this context
+    authApi = new AuthAPI(apiContext);
+
+    // Create a test user
+    testUser = generateUniqueUserData();
+    const registerResponse = await authApi.register(testUser);
+    expect(registerResponse.status(), "User registration should succeed").toBe(
+      201
+    );
+
+    // Extract user ID from the registration response if available
+    const registerBody = await registerResponse.json();
+    userId = registerBody.id; // Adjust field name based on actual API response
+
+    // Log in with the new user to get a token
+    const loginResponse = await authApi.login(
+      testUser.email,
+      testUser.password
+    );
+    expect(loginResponse.status(), "Login with new user should succeed").toBe(
+      200
+    );
+
+    // Extract token from login response
+    const loginBody = await loginResponse.json();
+    userToken = loginBody.access_token;
+  });
+
+  test("should login with newly created user credentials", async () => {
+    // Test login with the newly created user - using the shared context
+    const response = await authApi.login(testUser.email, testUser.password);
+
+    // Assert successful login
+    await expect(response, "Login with new user should succeed").toBeOK();
+    expect(response.status(), "Status code should be 200").toBe(200);
+
+    // Verify response has token
+    const responseBody = await response.json();
+    await expect(
+      responseBody,
+      "Response should have access token"
+    ).toHaveProperty("access_token");
+  });
+
+  test("should fetch user profile for newly created user", async () => {
+    // Create UsersAPI with the token from the new user and shared context
+    const usersApi = new UsersAPI(apiContext, userToken);
+
+    // Fetch user profile
+    const profileResponse = await usersApi.getProfile();
+
+    // Assert successful profile fetch
+    await expect(profileResponse, "Profile fetch should succeed").toBeOK();
+    expect(profileResponse.status(), "Status code should be 200").toBe(200);
+
+    // Verify profile data matches registration data
+    const profileBody = await profileResponse.json();
+    expect(profileBody.email).toBe(testUser.email);
+    expect(profileBody.first_name).toBe(testUser.first_name);
+    expect(profileBody.last_name).toBe(testUser.last_name);
+  });
+
+  test.afterAll(async () => {
+    // Get admin token to delete the user - using the shared context
+    const adminLoginResponse = await authApi.login(ADMIN_EMAIL, ADMIN_PASSWORD);
+    const adminBody = await adminLoginResponse.json();
+    const adminToken = adminBody.access_token;
+
+    // Initialize UsersAPI with admin token and shared context
+    const usersApi = new UsersAPI(apiContext, adminToken);
+
+    // Delete the test user
+    if (userId) {
+      const deleteResponse = await usersApi.deleteUser(userId);
+      expect(
+        deleteResponse.status(),
+        "User deletion should succeed"
+      ).toBeLessThan(400);
+    } else {
+      console.warn("Could not delete test user: user ID not found");
+    }
+
+    // Dispose of the API context
+    await apiContext.dispose();
+  });
 });
