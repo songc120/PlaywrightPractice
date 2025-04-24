@@ -63,60 +63,68 @@ This checklist breaks down the revised `API_TEST_PLAN.md` into smaller implement
 
 ## Phase 2: Product, Category & Brand Management
 
-- [ ] Implement: Products API helper class (`api/products-api.ts`) (Expand)
-- [ ] Implement: Products tests file (`tests/api/products.spec.ts`) (Expand)
-- [ ] Implement: List Products helper method (Expand with new params: `by_brand`, `by_category`, `is_rental`, `between`, `sort`, `page`)
-- [ ] Test: Retrieve product list (default)
-- [ ] Test: Retrieve product list with pagination (`page`)
-- [ ] Test: Retrieve product list sorted (`sort`)
-- [ ] Test: Retrieve product list filtered by brand/category/rental/price (`by_brand`, `by_category`, `is_rental`, `between`)
-- [ ] Implement: Search Products helper method (`/products/search` GET)
-- [ ] Test: Search products with matching term
-- [ ] Test: Search products with non-matching term
-- [ ] Test: Search products with partial term
-- [ ] Implement: Get Product Details helper method (`/products/{productId}` GET)
-- [ ] Test: Fetch details for a valid product ID
-- [ ] Test: Fetch details for an invalid product ID
+- [x] Implement: Products API helper class (`api/products-api.ts`) (Expand)
+- [x] Implement: Products tests file (`tests/api/products.spec.ts`) (Expand)
+- [x] Implement: List Products helper method (Expand with new params: `by_brand`, `by_category`, `is_rental`, `between`, `sort`, `page`)
+- [x] Test: Retrieve product list (default)
+- [x] Test: Retrieve product list with pagination (`page`)
+- [x] Test: Retrieve product list sorted (`sort`)
+- [x] Test: Retrieve product list filtered by brand/category/rental/price (`by_brand`, `by_category`, `is_rental`, `between`)
+- [x] Implement: Search Products helper method (`/products/search` GET)
+- [x] Test: Search products with matching term
+- [x] Test: Search products with non-matching term
+- [x] Test: Search products with partial term
+- [x] Implement: Get Product Details helper method (`/products/{productId}` GET)
+- [x] Test: Fetch details for a valid product ID
+- [x] Test: Fetch details for an invalid product ID
 - **NEW Tasks:**
-  - [ ] Implement: Product CRUD helpers (`/products` POST, `/products/{productId}` PUT/PATCH/DELETE)
-  - [ ] Test: Create a new product (Admin?)
-  - [ ] Test: Create product with invalid data
-  - [ ] Test: Update an existing product (Admin?)
-  - [ ] Test: Partially update (patch) an existing product (Admin?)
-  - [ ] Test: Delete a product (Admin?)
-  - [ ] Test: Attempt Product CRUD as regular user
-  - [ ] Implement: Related Products helper (`/products/{productId}/related` GET)
-  - [ ] Test: Get related products for a valid product ID
-  - [ ] Implement: Categories API helper class (`api/categories-api.ts`)
-  - [ ] Implement: Categories tests file (`tests/api/categories.spec.ts`)
-  - [ ] Implement: List Categories helpers (`/categories` GET, `/categories/tree` GET)
-  - [ ] Test: List available categories (flat list)
-  - [ ] Test: List available categories (tree structure)
-  - [ ] Test: List category tree by parent slug (`by_category_slug`)
-  - [ ] Implement: Category CRUD helpers (`/categories` POST, `/categories/{categoryId}` GET (tree), PUT/PATCH/DELETE)
-  - [ ] Test: Create a new category (Admin?)
-  - [ ] Test: Get specific category tree (`/categories/tree/{categoryId}`)
-  - [ ] Test: Update a category (Admin?)
-  - [ ] Test: Partially update (patch) a category (Admin?)
-  - [ ] Test: Delete a category (Admin?)
-  - [ ] Implement: Search Categories helper (`/categories/search` GET)
-  - [ ] Test: Search categories by name
-  - [ ] Implement: Brands API helper class (`api/brands-api.ts`)
-  - [ ] Implement: Brands tests file (`tests/api/brands.spec.ts`)
-  - [ ] Implement: List Brands helper (`/brands` GET)
-  - [ ] Test: List available brands
-  - [ ] Implement: Brand CRUD helpers (`/brands` POST, `/brands/{brandId}` GET, PUT/PATCH/DELETE)
-  - [ ] Test: Create a new brand (Admin?)
-  - [ ] Test: Get specific brand (`/brands/{brandId}`)
-  - [ ] Test: Update a brand (Admin?)
-  - [ ] Test: Partially update (patch) a brand (Admin?)
-  - [ ] Test: Delete a brand (Admin?)
-  - [ ] Implement: Search Brands helper (`/brands/search` GET)
-  - [ ] Test: Search brands by name
-  - [ ] Implement: Images API helper class (`api/images-api.ts`)
-  - [ ] Implement: Images tests file (`tests/api/images.spec.ts`)
-  - [ ] Implement: List Images helper (`/images` GET)
-  - [ ] Test: List available images
+  - [x] Implement: Product CRUD helpers (`/products` POST, `/products/{productId}` PUT/PATCH/DELETE)
+  - [x] Test: Create a new product (Admin?)
+  - [x] Test: Create product with invalid data
+  - [x] Test: Update an existing product (Admin?)
+  - [x] Test: Partially update (patch) an existing product (Admin?)
+  - [x] Test: Delete a product (Admin?)
+  - [x] Test: Attempt Product CRUD as regular user
+  - [x] Implement: Related Products helper (`/products/{productId}/related` GET)
+  - [x] Test: Get related products for a valid product ID
+  - [x] Implement: Categories API helper class (`api/categories-api.ts`)
+  - [x] Implement: Categories tests file (`tests/api/categories.spec.ts`)
+  - [x] Implement: List Categories helpers (`/categories` GET, `/categories/tree` GET)
+  - [x] Test: List available categories (flat list)
+  - [x] Test: List available categories (tree structure)
+  - [x] Test: List category tree by parent slug (`by_category_slug`)
+  - [x] Implement: Category CRUD helpers (`/categories` POST, `/categories/{categoryId}` GET (tree), PUT/PATCH/DELETE)
+  - [x] Test: Create a new category (Admin?)
+  - [x] Test: Get specific category tree (`/categories/tree/{categoryId}`)
+  - [x] Test: Update a category (Admin?)
+  - [x] Test: Partially update (patch) a category (Admin?)
+  - [x] Test: Delete a category (Admin?)
+  - [x] Implement: Search Categories helper (`/categories/search` GET)
+  - [x] Test: Search categories by name
+  - [x] Implement: Brands API helper class (`api/brands-api.ts`)
+  - [x] Implement: Brands tests file (`tests/api/brands.spec.ts`)
+  - [x] Implement: List Brands helper (`/brands` GET)
+  - [x] Test: List available brands
+  - [x] Implement: Brand CRUD helpers (`/brands` POST, `/brands/{brandId}` GET, PUT/PATCH/DELETE)
+  - [x] Test: Create a new brand (Admin?)
+  - [x] Test: Get specific brand (`/brands/{brandId}`)
+  - [x] Test: Update a brand (Admin?)
+  - [x] Test: Partially update (patch) a brand (Admin?)
+  - [x] Test: Delete a brand (Admin?)
+  - [x] Implement: Search Brands helper (`/brands/search` GET)
+  - [x] Test: Search brands by name
+  - [x] Implement: Images API helper class (`api/images-api.ts`)
+  - [x] Implement: Images tests file (`tests/api/images.spec.ts`)
+  - [x] Implement: List Images helper (`/images` GET)
+  - [x] Test: List available images
+
+## Test Refactoring Tasks (Added for Improved Reliability)
+
+- [x] Refactor: Make Categories tests self-contained by creating test categories within tests instead of relying on shared variables
+- [ ] Refactor: Make Brands tests self-contained by removing dependency on testBrandId
+- [ ] Refactor: Review Products tests and ensure they are self-contained
+- [ ] Refactor: Review Images tests and ensure they are self-contained
+- [ ] Refactor: Review Users tests for any shared test data dependencies that could be refactored
 
 ## Phase 3: Shopping Cart & Favorites Management
 

@@ -2,7 +2,7 @@
 
 **Current Goal:** Update API test plan and tasks based on the newly provided OpenAPI v5.0.0 specification.
 
-**Current Mode:** VAN (Completed) -> Transitioning to PLAN.
+**Current Mode:** VAN
 
 **Focus Areas:**
 
@@ -13,7 +13,12 @@
 - Identify necessary new API helper files (`api/*.ts`) and test spec files (`tests/api/*.spec.ts`).
 - Consider role-based access control (Admin vs. User) for relevant endpoints.
 
+**Recent Completed Tasks:**
+
+- Fixed `tests/api/categories.spec.ts` by removing dependencies on `testCategoryId` and making test cases self-contained, creating temporary test categories within each test.
+
 **Next Steps:**
 
-1.  Review the proposed updates to `API_TEST_PLAN.md` and `tasks.md`.
-2.  Proceed with PLAN mode to detail the implementation strategy for the new tasks.
+1. Continue implementing tasks based on the roadmap in `tasks.md`.
+2. Focus on completing Phase 2: Product, Category & Brand Management tasks.
+3. Ensure API helper classes follow consistent patterns with proper TypeDoc documentation.
